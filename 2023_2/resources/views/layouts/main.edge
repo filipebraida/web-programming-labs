@@ -1,0 +1,22 @@
+<html>
+
+<head>
+  <title>Rural Medium</title>
+  <link rel="stylesheet" type="text/css" href="{{ asset('assets/app.css') }}">
+</head>
+
+<body class="bg-white text-black antialiased">
+  <section class="mx-auto max-w-3xl px-4 sm:px-6 xl:max-w-5xl xl:px-0">
+    <div class="flex h-screen flex-col justify-between font-sans">
+      @include('layouts/partials/header')
+
+      <main class="mb-auto">
+        @!section('content')
+      </main>
+
+      @include('layouts/partials/footer')
+    </div>
+  </section>
+</body>
+
+</html>

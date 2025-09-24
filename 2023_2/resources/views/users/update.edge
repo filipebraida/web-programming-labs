@@ -1,0 +1,24 @@
+@layout('layouts/main')
+
+@section('content')
+  <p>
+    Atualize o usuário
+  </p>
+  <form action="{{ route('users.patch', { id: user.id }, { qs: { _method: 'PATCH' }}) }}" method="POST">
+    <div>
+      <label>
+        Email:
+      </label>
+      <input type="email" name="email" placeholder="Email" value="{{ user.email }}" />
+    </div>
+    <div>
+      <label>
+        Senha:
+      </label>
+      <input type="password" name="password" placeholder="Senha" />
+    </div>
+    <button type="submit">
+      Atualizar
+    </button>
+  </form>
+@end

@@ -1,0 +1,15 @@
+<input
+  class="rounded-md border shadow-md
+  @if(flashMessages.has(`errors.${name}`))~
+    border-red-500
+  @end~
+  "
+  type="{{ type }}"
+  name="{{ name }}"
+  value="{{ flashMessages.get(name) ? flashMessages.get(name) : '' }}"
+/>
+@if(flashMessages.has(`errors.${name}`))
+  <p class="text-sm text-primary-500">
+    {{ flashMessages.get(`errors.${name}`) }}
+  </p>
+@end

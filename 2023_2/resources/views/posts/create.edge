@@ -1,0 +1,28 @@
+@layout('layouts/main')
+
+@section('content')
+  <form action="{{ route('posts.store') }}" method="POST" enctype="multipart/form-data">
+
+    <div>
+      @!form.legend({ name: 'Título'})
+      @!form.input({ name: 'title', type: 'text' })
+    </div>
+
+    <div>
+      @!form.legend({ name: 'Conteúdo'})
+      @!form.input({ name: 'content', type: 'text' })
+    </div>
+
+    <div>
+      @!form.legend({ name: 'Cover'})
+      @!form.input({ name: 'cover', type: 'file' })
+    </div>
+
+    <div>
+      @form.button()
+        Salvar
+      @end
+    </div>
+  </form>
+
+@end

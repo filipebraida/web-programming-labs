@@ -1,0 +1,22 @@
+@layout('layouts/main')
+
+@section('content')
+  <p>
+    Crie o seu usuário
+  </p>
+  <form action="/users" method="POST">
+    <div>
+      @!form.legend({ name: 'Email'})
+      @!form.input({ name: 'email', type: 'email' })
+    </div>
+    <div>
+      @!form.legend({ name: 'Senha'})
+      @!form.input({ name: 'password', type: 'password' })
+    </div>
+    <div>
+      @form.button()
+        Criar
+      @end
+    </div>
+  </form>
+@end

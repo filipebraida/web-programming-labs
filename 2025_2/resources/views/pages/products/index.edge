@@ -1,0 +1,34 @@
+@layout.app({ title: 'oi' })
+
+@slot('main')
+<div></div>
+  <h1>Lista de Produtos</h1>
+  <span>
+    <a href="{{ route('products.create') }}">Criar Produto</a>
+  </span>
+</div>
+<div>
+  <table>
+    <thead>
+      <tr>
+        <th>Nome</th>
+        <th>Descrição</th>
+        <th>Preço</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      @each(product in products)
+        <tr>
+          <td>{{ product.name }}</td>
+          <td>{{ product.description }}</td>
+          <td>{{ product.price }}</td>
+          <td><a href="#">editar</a></td>
+        </tr>
+      @end
+    </tbody>
+  </table>
+</div>
+@end
+
+@end

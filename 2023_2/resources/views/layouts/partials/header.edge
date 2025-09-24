@@ -1,0 +1,41 @@
+<header class="flex items-center justify-between py-10">
+  <div>
+    <a aria-label="TailwindBlog" href="{{ route('home.show') }}">
+      <div class="flex items-center justify-between">
+        <div class="mr-3 h-10 w-10">
+          <img src="{{ asset('assets/images/logo.png')}}"/>
+        </div>
+        <div class="hidden h-6 text-2xl font-semibold sm:block">
+          RuralMedium
+        </div>
+      </div>
+    </a>
+  </div>
+  <div class="flex items-center space-x-4 leading-5 sm:space-x-6">
+    @if(auth.user)
+      <a href="{{ route('posts.create') }}" class="hidden font-medium text-gray-900 sm:block">
+        Escreva
+      </a>
+    @end
+    <a href="{{ route('posts.index') }}" class="hidden font-medium text-gray-900 sm:block">
+      Comece Aqui
+    </a>
+
+    @if(auth.user)
+      <a href="{{ route('posts.index') }}" class="hidden font-medium text-gray-900 sm:block">
+        {{ auth.user.email }}
+      </a>
+      <form action="{{ route('auth.destroy', { qs: { _method: 'DELETE' }}) }}" method="POST" class="hidden font-medium text-gray-900 sm:block">
+        <button type="submit">
+          Logout
+        </button>
+      </form>
+    @else
+      <a href="{{ route('auth.create') }}" class="hidden font-medium text-gray-900 sm:block">
+        Login
+      </a>
+    @end
+
+
+  </div>
+</header>

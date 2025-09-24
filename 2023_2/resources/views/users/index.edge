@@ -1,0 +1,48 @@
+@layout('layouts/main')
+
+@section('content')
+  <h1 class="text-3xl text-red-500">
+    Hello world!dsdsds
+  </h1>
+  <p>
+    Usuários
+  </p>
+
+  <div>
+    <a href="{{ route('users.create') }}">Criar</a>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Email</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      @each(user in users)
+      <tr>
+        <td>
+          <a href="{{ route('users.show', { id: user.id }) }}">
+            {{ user.email }}
+          </a>
+        </td>
+        <td>
+          <span>
+            <a href="{{ route('users.show', { id: user.id }) }}">
+              show
+            </a>
+          </span>
+          <span>
+            <a href="{{ route('users.update', { id: user.id }) }}">edit</a>
+          </span>
+          <span>
+            delete
+          </span>
+        </td>
+      </tr>
+      @end
+      </tr>
+    </tbody>
+  </table>
+@end

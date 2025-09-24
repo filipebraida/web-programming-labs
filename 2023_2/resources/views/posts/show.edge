@@ -1,0 +1,66 @@
+@layout('layouts/main')
+
+@section('content')
+
+<script>
+  window.document.onload = function(e) {
+  }
+
+  async function likebutton(url) {
+    const button = document.getElementById('like')
+    const response = await fetch(url)
+
+    const data = await response.json()
+
+    if(data.liked) {
+      button.classList.replace('text-black', 'text-red-400')
+    } else {
+      button.classList.replace('text-red-400', 'text-black')
+    }
+  }
+</script>
+
+<section class="mx-auto max-w-3xl px-4 sm:px-6 xl:max-w-5xl xl:px-0">
+  <article>
+    <div class="xl:divide-y xl:divide-gray-200">
+      <header class="pt-6 xl:pb-6">
+        <div class="space-y-1 text-center">
+          <dl class="space-y-10">
+            <div>
+              <dt class="sr-only">
+                Publicado em
+              </dt>
+              <dd class="text-base font-medium leading-6 text-gray-500">
+                <time datetime="2023-08-05T00:00:00.000Z">
+                  {{ post.createdAt }}
+                </time>
+              </dd>
+            </div>
+          </dl>
+          <div>
+            <h1 class="text-3xl font-extrabold leading-9 tracking-tight text-gray-900 sm:text-4xl sm:leading-10 md:text-5xl md:leading-14">
+              {{ post.title }}
+            </h1>
+          </div>
+        </div>
+      </header>
+      <div class="grid-rows-[auto_1fr] divide-y divide-gray-200 pb-8 xl:grid xl:grid-cols-4 xl:gap-x-6 xl:divide-y-0">
+        <div class="divide-y divide-gray-200 xl:col-span-3 xl:row-span-2 xl:pb-0">
+          <div class="prose max-w-none pb-8 pt-10">
+            dsdssd
+          </div>
+        </div>
+      </div>
+    </div>
+  </article>
+</section>
+{{--  <button id="like" class="w-4 h-4 {{ await post.liked(user) ? 'text-red-400' : text-black }}"
+onclick="likebutton('{{ route('posts.like', { id: post.id })}}')">
+<svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"
+  xmlns="http://www.w3.org/2000/svg">
+  <path
+    d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z"
+    stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>  --}}
+
+@end

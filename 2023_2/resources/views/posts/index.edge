@@ -1,0 +1,58 @@
+@layout('layouts/main')
+
+@section('content')
+
+<div class="divide-y divide-gray-200">
+  <div class="space-y-2 pb-8 pt-6 md:space-y-5">
+    <h1 class="text-3xl font-extrabold leading-9 tracking-tight text-gray-900 sm:text-4xl sm:leading-10 md:text-6xl md:leading-14">
+      Últimos
+    </h1>
+    <p class="text-lg leading-7 text-gray-500">
+      Encontre textos de variados autores e assuntos
+    </p>
+  </div>
+  <ul class="divide-y divide-gray-200">
+    <li class="py-12">
+      <article>
+        <div class="space-y-2 xl:grid xl:grid-cols-4 xl:items-baseline xl:space-y-0">
+          <dl>
+            <dt class="sr-only">
+              Publicado em
+            </dt>
+            <dd class="text-base font-medium leading-6 text-gray-500">
+              <time datetime="2023-08-05T00:00:00.000Z">
+                August 5, 2023
+              </time>
+            </dd>
+          </dl>
+          <div class="space-y-5 xl:col-span-3">
+            <div class="space-y-6">
+              <div>
+                <h2 class="text-2xl font-bold leading-8 tracking-tight">
+                  <a href="#" class="text-gray-900">
+                    Título
+                  </a>
+                </h2>
+                <div class="flex flex-wrap">
+                  <a href="#" class="mr-3 text-sm font-medium uppercase text-primary-500 hover:text-primary-600">
+                    ASSUNTO
+                  </a>
+                </div>
+              </div>
+              <div class="prose max-w-none text-gray-500">
+                blah blah
+              </div>
+            </div>
+            <div class="text-base font-medium leading-6">
+              <a class="text-primary-500 hover:text-primary-600" href="#">
+                Leia mais →
+              </a>
+            </div>
+          </div>
+        </div>
+      </article>
+    </li>
+  </ul>
+</div>
+
+@end
