@@ -1,0 +1,26 @@
+@layout('layouts/main')
+
+@set('title', 'Exibindo o Vídeo')
+
+@section('content')
+  @!youtube({ key: video.youtubeKey })
+
+  <fieldset>
+    <div>
+      <legend>Título</legend>
+      <p>{{ video.title }}</p>
+    </div>
+    <div>
+      <legend>Descrição</legend>
+      <p>{{ video.description }}</p>
+    </div>
+    <div>
+      <legend>Video</legend>
+      <p>{{ video.youtubeKey }}</p>
+      {{--  <iframe id="player" type="text/html" width="320" height="180"
+        src="http://www.youtube.com/embed/{{ video.youtubeKey }}?enablejsapi=1"
+        frameborder="0">
+      </iframe>  --}}
+    </div>
+  </fieldset>
+@endsection

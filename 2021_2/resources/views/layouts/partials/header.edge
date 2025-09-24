@@ -1,0 +1,58 @@
+<nav id="header" class="w-full z-30 top-0 py-1">
+  <div class="w-full container mx-auto flex flex-wrap items-center justify-between mt-0 px-6 py-3">
+
+      <label for="menu-toggle" class="cursor-pointer md:hidden block">
+          <svg class="fill-current text-gray-900" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20">
+              <title>menu</title>
+              <path d="M0 3h20v2H0V3zm0 6h20v2H0V9zm0 6h20v2H0v-2z"></path>
+          </svg>
+      </label>
+
+      <input class="hidden" type="checkbox" id="menu-toggle" />
+
+      <div class="hidden md:flex md:items-center md:w-auto w-full order-3 md:order-1" id="menu">
+          <nav>
+              <ul class="md:flex items-center justify-between text-base text-gray-700 pt-4 md:pt-0">
+                  <li><a class="inline-block no-underline hover:text-black hover:underline py-2 px-4" href="{{ route('videos.index') }}">Videos</a></li>
+              </ul>
+          </nav>
+      </div>
+
+      <div class="order-1 md:order-2">
+          <a class="flex items-center tracking-wide no-underline hover:no-underline font-bold text-gray-800 text-xl " href="{{ route('index') }}">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 14l9-5-9-5-9 5 9 5z"></path><path d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5zm0 0l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14zm-4 6v-7.5l4-2.222"></path></svg>
+              RURALTECA
+          </a>
+      </div>
+
+      
+      <div class="order-2 md:order-3 flex items-center" id="nav-content">
+
+        @if(!auth.isLoggedIn)
+
+          <a class="inline-block no-underline hover:text-black" href="{{ route('sessions.create') }}">
+              Login
+          </a>
+
+          <a class="pl-3 inline-block no-underline hover:text-black" href="{{ route('users.create') }}">
+              Cadastrar
+          </a>
+
+        @else
+
+          <a class="inline-block no-underline hover:text-black" href="#">
+              <svg class="fill-current hover:text-black" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                  <circle fill="none" cx="12" cy="7" r="3" />
+                  <path d="M12 2C9.243 2 7 4.243 7 7s2.243 5 5 5 5-2.243 5-5S14.757 2 12 2zM12 10c-1.654 0-3-1.346-3-3s1.346-3 3-3 3 1.346 3 3S13.654 10 12 10zM21 21v-1c0-3.859-3.141-7-7-7h-4c-3.86 0-7 3.141-7 7v1h2v-1c0-2.757 2.243-5 5-5h4c2.757 0 5 2.243 5 5v1H21z" />
+              </svg>
+          </a>
+
+          <a class="pl-3 inline-block no-underline hover:text-black" href="{{ route('sessions.destroy') }}">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+          </a>
+
+        @endif
+
+      </div>
+  </div>
+</nav>

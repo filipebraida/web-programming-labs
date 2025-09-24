@@ -1,0 +1,14 @@
+<div>
+  <legend>{{ title }}</legend>
+  <input
+  @if(flashMessages.has(`errors.${name}`))
+  style="border: 1px solid red"
+  @endif
+  name="{{ name }}" type="{{ type }}"/>
+
+  @if(flashMessages.has(`errors.${name}`))
+      <span class="text-xs text-red-600">
+        {{ flashMessages.get(`errors.${name}`) }}
+      </span>
+  @endif
+</div>

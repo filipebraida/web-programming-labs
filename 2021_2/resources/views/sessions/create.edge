@@ -1,0 +1,30 @@
+@layout('layouts/main')
+
+@set('title', 'Login')
+
+@section('content')
+
+<section class="bg-white py-8">
+  <div class="container py-8 px-6 mx-auto">
+
+    <form action="{{ route('sessions.store') }}" method="POST">
+      {{ csrfField() }}
+      <fieldset>
+        @!form.input({ title: 'Email', name: 'email', type: 'email' })
+
+        @!form.input({ title: 'Senha', name: 'password', type: 'password' })
+
+        @if(flashMessages.has(`errors.login`))
+          <div>
+            {{ flashMessages.get(`errors.login`) }}
+          </div>
+        @endif
+
+        @!form.button({ name: 'Login' })
+      </fieldset>
+    </form>
+
+  </div>
+</section>
+
+@endsection

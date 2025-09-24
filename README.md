@@ -11,6 +11,9 @@ Cada pasta segue o padrão `ANO_SEMESTRE` e contém o código produzido pela tur
 
 ## Projetos
 
+## 2021-2
+- **Ruralteca**: sistema de gerenciamento de vídeos.
+
 ### 2023-2
 - **RuralMedium**: plataforma no estilo *Medium*, voltada para publicação de artigos e interação entre usuários.
 
