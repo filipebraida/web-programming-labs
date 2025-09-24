@@ -1,40 +1,21 @@
-# Ruralmerce
+# Web Programming Labs
 
-Sistema de comércio eletrônico que está sendo desenvolvida com a turma de Programação Web 2024-2.
+Este repositório reúne os projetos desenvolvidos pelos alunos da disciplina **Programação para Web** da UFRRJ, organizados por semestre.  
+O objetivo é manter um histórico das aplicações criadas em aula, servindo como referência e material de estudo para turmas futuras.
 
-## Instalação do Desenvolvimento
+## Ementa e material do curso
+Ementa do curso e material sobre programação para Web: [filipe.braida.com.br/course/web/](https://filipe.braida.com.br/course/web/)
 
-1 - Criar a pasta temporária para o banco SQLite
+## Estrutura
+Cada pasta segue o padrão `ANO_SEMESTRE` e contém o código produzido pela turma naquele período.
 
-```console
-mkdir tmp
-```
+## Projetos
 
-2 - Criar o `.env`
+### 2023-2
+- **RuralMedium**: plataforma no estilo *Medium*, voltada para publicação de artigos e interação entre usuários.
 
-```console
-cp .env.example .env
-```
+### 2024-2
+- **Ruralmerce**: sistema de e-commerce acadêmico, simulando um ambiente de compras online voltado à comunidade.
 
-3 - Instalar as dependências
-
-```console
-npm install
-```
-
-## Execução
-
-```console
-npm run dev
-```
-
-### Videos das aulas
-
-1. [Desenvolvendo um Sistema Web - Primeiras Rotas](https://youtu.be/FURzp4VD0RE)
-2. [Desenvolvendo um Sistema Web - Primeiro Formulário](https://youtu.be/0TeamhpmofQ)
-3. [Desenvolvendo um Sistema Web - Modelagem dos Dados](https://youtu.be/JOLQBJN7qhQ)
-4. [Desenvolvendo um Sistema Web - Criação de CRUD](https://youtu.be/fWqu9ZKlb4I)
-
-### Videos sobre Programação para Web
-
-Ementa do curso e material sobre programação para Web: https://filipe.braida.com.br/course/web/
+### 2025-2
+- **Ruralmerce**: sistema de e-commerce acadêmico, simulando um ambiente de compras online voltado à comunidade.
