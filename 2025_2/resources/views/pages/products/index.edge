@@ -1,7 +1,12 @@
 @layout.app({ title: 'oi' })
 
 @slot('main')
-<div></div>
+
+@button({ type: 'submit' })
+  <span>sasasa</span>
+@end
+
+<div>
   <h1>Lista de Produtos</h1>
   <span>
     <a href="{{ route('products.create') }}">Criar Produto</a>
@@ -23,7 +28,17 @@
           <td>{{ product.name }}</td>
           <td>{{ product.description }}</td>
           <td>{{ product.price }}</td>
-          <td><a href="#">editar</a></td>
+          <td>
+            <a href="{{ route('products.show', { id: product.id }) }}">ver</a>
+
+            <a href="{{ route('products.edit', { id: product.id }) }}">editar</a>
+
+            @form({ action: route('products.destroy', { id: product.id }, { qs: { _method: 'DELETE' }}) })
+              <button type="submit">
+                deletar
+              </button>
+            @end
+          </td>
         </tr>
       @end
     </tbody>

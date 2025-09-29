@@ -1,0 +1,5 @@
+<form action="{{ action }}" method="{{ method ? method : 'POST' }}">
+  {{ csrfField() }}
+
+  {{{ await $slots.main() }}}
+</form>

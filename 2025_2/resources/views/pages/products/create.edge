@@ -1,34 +1,50 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <title>Ruralmerce</title>
-</head>
-<body>
-  <form action="/products" method="POST">
+@layout.app({ title: 'oi' })
+
+@slot('main')
+  @let(url = product ? route('products.update', { id: product.id }, { qs: { _method: 'PUT' } }) : route('products.store'))
+
+  @form({ action: url, method: 'POST' })
     <div>
       <label for="name">
         Nome do Produto
       </label>
-      <input type="text" name="name" placeholder="Nome..."/>
+
+      @!input({
+        type: 'text',
+        name: 'name',
+        placeholder: 'nome ...',
+        value: product?.name || ''
+      })
     </div>
 
     <div>
       <label for="price">
         Preço
       </label>
-      <input type="number" name="price" placeholder="Preço..."  />
+
+      @!input({
+        type: 'number',
+        name: 'price',
+        placeholder: 'preço ...',
+        value: product?.price || ''
+      })
     </div>
 
     <div>
       <label for="description">
         Descrição
       </label>
-      <textarea name="description"></textarea>
+
+      @!textarea({
+        name: 'description',
+        value: product?.description || ''
+      })
     </div>
 
     <button>
-      salvar
+      {{ product ? 'salvar' : 'criar' }}
     </button>
-  </form>
-</body>
-</html>
+  @end
+@end
+
+@end
