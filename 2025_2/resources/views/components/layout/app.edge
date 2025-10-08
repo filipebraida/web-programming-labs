@@ -1,18 +1,28 @@
 <!DOCTYPE html>
-<html>
+<html class="h-full">
 <head>
   <meta charset="utf-8">
   <title>{{ title || "Your default title" }}</title>
+  @viteReactRefresh()
   @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body>
-  <nav>
+<body class="h-full">
+  <div class="min-h-full">
     @include('components/layout/partials/header')
-  </nav>
 
-  <section>
-    {{{ await $slots.main() }}}
-  </section>
+    <div class="py-10">
+      <header>
+        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <h1 class="text-3xl font-bold tracking-tight text-gray-900">Home</h1>
+        </div>
+      </header>
+      <main>
+        <div class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+          {{{ await $slots.main() }}}
+        </div>
+      </main>
+    </div>
+  </div>
 
   <footer>
     @include('components/layout/partials/footer')

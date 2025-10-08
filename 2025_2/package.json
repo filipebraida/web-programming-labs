@@ -60,6 +60,7 @@
     "@adonisjs/vite": "^4.0.0",
     "@tailwindcss/vite": "^4.1.13",
     "@vinejs/vine": "^3.0.1",
+    "basecoat-css": "^0.3.2",
     "better-sqlite3": "^12.2.0",
     "edge.js": "^6.2.1",
     "luxon": "^3.7.1",

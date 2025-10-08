@@ -1,1 +1,1 @@
-console.log('Hello World')
+import 'basecoat-css/all';
