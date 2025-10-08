@@ -10,9 +10,12 @@
 import router from '@adonisjs/core/services/router'
 
 const ProductsController = () => import('#controllers/products_controller')
-
-router.resource('/products', ProductsController).as('products')
+const ImagesController = () => import('#controllers/images_controller')
 
 router.get('/', ({ view }) => {
   return view.render('pages/home')
 })
+
+router.resource('/products', ProductsController).as('products')
+
+router.get('/images/:name', [ImagesController, 'show']).as('images.show')

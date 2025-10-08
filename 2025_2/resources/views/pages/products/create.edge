@@ -1,53 +1,60 @@
 @layout.app({ title: 'oi' })
+  @slot('main')
+    @let(url = product ? route('products.update', { id: product.id }, { qs: { _method: 'PUT' } }) : route('products.store'))
 
-@slot('main')
-  @let(url = product ? route('products.update', { id: product.id }, { qs: { _method: 'PUT' } }) : route('products.store'))
+    @form({ action: url, method: 'POST', enctype: 'multipart/form-data' })
+      <div class="space-y-12">
+        <div class="border-b border-gray-900/10 pb-12">
+          <h2 class="text-base/7 font-semibold text-gray-900">Produto</h2>
+          <p class="mt-1 text-sm/6 text-gray-600">Esta informação será exibida publicamente, portanto, tenha cuidado com o que compartilha.</p>
 
-  @form({ action: url, method: 'POST' })
-    <div class="space-y-12">
-      <div class="border-b border-gray-900/10 pb-12">
-        <h2 class="text-base/7 font-semibold text-gray-900">Produto</h2>
-        <p class="mt-1 text-sm/6 text-gray-600">Esta informação será exibida publicamente, portanto, tenha cuidado com o que compartilha.</p>
-
-        <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
-          <div class="sm:col-span-3">
-            <label for="first-name" class="block text-sm/6 font-medium text-gray-900">Nome</label>
-            <div class="mt-2">
-              @!input({
-                type: 'text',
-                name: 'name',
-                placeholder: 'nome ...',
-                value: product?.name || ''
-              })
+          <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
+            <div class="sm:col-span-3">
+              <label for="first-name" class="block text-sm/6 font-medium text-gray-900">Nome</label>
+              <div class="mt-2">
+                @!input({
+                  type: 'text',
+                  name: 'name',
+                  placeholder: 'nome ...',
+                  value: product?.name || ''
+                })
+              </div>
             </div>
-          </div>
-          <div class="sm:col-span-3">
-            <label for="first-name" class="block text-sm/6 font-medium text-gray-900">Preço</label>
-            <div class="mt-2">
-              @!input({
-                type: 'number',
-                name: 'price',
-                placeholder: 'preço ...',
-                value: product?.price || ''
-              })
-            </div>
-          </div>
 
-          @!textarea({
-            name: 'description',
-            value: product?.description || ''
-          })
-          @end
+            <div class="sm:col-span-3">
+              <label for="first-name" class="block text-sm/6 font-medium text-gray-900">Preço</label>
+              <div class="mt-2">
+                @!input({
+                  type: 'number',
+                  name: 'price',
+                  placeholder: 'preço ...',
+                  value: product?.price || ''
+                })
+              </div>
+            </div>
+
+            <div class="sm:col-span-3">
+              <label for="first-name" class="block text-sm/6 font-medium text-gray-900">Imagem do Produto</label>
+              <div class="mt-2">
+                <input type="file" name="image" accept="image/png, image/jpeg" />
+              </div>
+            </div>
+
+            @!textarea({
+              name: 'description',
+              value: product?.description || ''
+            })
+          </div>
         </div>
       </div>
-    </div>
-    <div class="mt-6 flex items-center justify-end gap-x-6">
-      <a href="{{ route('products.index') }}" class="btn-secondary">
-        Cancelar
-      </a>
-      <button class="btn">
-        {{ product ? 'Salvar' : 'Criar' }}
-      </button>
-    </div>
+      <div class="mt-6 flex items-center justify-end gap-x-6">
+        <a href="{{ route('products.index') }}" class="btn-secondary">
+          Cancelar
+        </a>
+        <button type="submit" class="btn">
+          {{ product ? 'Salvar' : 'Criar' }}
+        </button>
+      </div>
+    @end
   @end
 @end

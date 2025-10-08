@@ -1,8 +1,11 @@
 import type { HttpContext } from '@adonisjs/core/http'
+import { cuid } from '@adonisjs/core/helpers'
 
 import Product from '#models/product'
 
 import { createProductValidator } from '#validators/product'
+import app from '@adonisjs/core/services/app'
+import Image from '#models/image'
 
 export default class ProductsController {
   public async index({ view }: HttpContext) {
@@ -13,6 +16,7 @@ export default class ProductsController {
 
   public async show({ params, view }: HttpContext) {
     const product = await Product.findOrFail(params.id)
+    await product.load('images')
 
     return view.render('pages/products/show', { product })
   }
@@ -30,7 +34,21 @@ export default class ProductsController {
   public async store({ request, response }: HttpContext) {
     const payload = await request.validateUsing(createProductValidator)
 
-    const product = await Product.create(payload)
+    const product = await Product.create({
+      name: payload.name,
+      description: payload.description,
+      price: payload.price,
+    })
+
+    const image = new Image()
+    image.name = `${cuid()}.${payload.image.extname}`
+    image.productId = product.id
+
+    await payload.image.move(app.makePath('tmp/uploads'), {
+      name: image.name,
+    })
+
+    await image.save()
 
     return response.redirect().toRoute('products.show', { id: product.id })
   }
