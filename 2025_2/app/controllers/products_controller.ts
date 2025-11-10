@@ -14,11 +14,15 @@ export default class ProductsController {
     return view.render('pages/products/index', { products })
   }
 
-  public async show({ params, view }: HttpContext) {
+  public async show({ auth, params, view }: HttpContext) {
     const product = await Product.findOrFail(params.id)
     await product.load('images')
 
-    return view.render('pages/products/show', { product })
+    const liked = await product.liked(auth.user!)
+
+    console.log('liked', liked)
+
+    return view.render('pages/products/show', { product, liked })
   }
 
   public async create({ view }: HttpContext) {

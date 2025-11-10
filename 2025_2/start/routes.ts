@@ -9,6 +9,7 @@
 
 import router from '@adonisjs/core/services/router'
 import { middleware } from './kernel.js'
+const FeedbacksController = () => import('#controllers/feedbacks_controller')
 
 const ProductsController = () => import('#controllers/products_controller')
 const ImagesController = () => import('#controllers/images_controller')
@@ -24,5 +25,16 @@ router.get('/login', [AuthController, 'create']).as('auth.create')
 router.post('/login', [AuthController, 'store']).as('auth.store')
 
 router.resource('/products', ProductsController).use('*', middleware.auth()).as('products')
+
+router
+  .get('/api/products/:id/like', [FeedbacksController, 'like'])
+  .where('id', router.matchers.number())
+  .use(middleware.auth())
+  .as('feedbacks.like')
+router
+  .get('/api/products/:id/dislike', [FeedbacksController, 'dislike'])
+  .where('id', router.matchers.number())
+  .use(middleware.auth())
+  .as('feedbacks.dislike')
 
 router.get('/images/:name', [ImagesController, 'show']).as('images.show')

@@ -3,6 +3,8 @@ import { BaseModel, column, hasMany } from '@adonisjs/lucid/orm'
 import type { HasMany } from '@adonisjs/lucid/types/relations'
 
 import Image from '#models/image'
+import Feedback from '#models/feedback'
+import User from '#models/user'
 
 export default class Product extends BaseModel {
   @column({ isPrimary: true })
@@ -25,4 +27,13 @@ export default class Product extends BaseModel {
 
   @column.dateTime({ autoCreate: true, autoUpdate: true })
   declare updatedAt: DateTime
+
+  public async liked(user: User) {
+    const feedback = await Feedback.query()
+      .where('productId', this.id)
+      .andWhere('userId', user.id)
+      .first()
+
+    return feedback ? Boolean(feedback.liked) : null
+  }
 }

@@ -1,24 +1,68 @@
 @layout.app({ title: 'oi' })
 
 @slot('main')
-<div></div>
-  <h1>Produto</h1>
-</div>
-<div>
-  <span>
-    {{ product.name }}
-  </span>
-  <span>
-    {{ product.price }}
-  </span>
-  <span>
-    {{ product.description }}
-  </span>
+  <div></div>
+    <h1>Produto</h1>
+  </div>
+  <div>
+    <span>
+      {{ product.name }}
+    </span>
+    <span>
+      {{ product.price }}
+    </span>
+    <span>
+      {{ product.description }}
+    </span>
 
-  @each(image in product.images)
-    <img src="{{ route('images.show', { name: image.name })}}" />
-  @end
-</div>
+    @each(image in product.images)
+      <img src="{{ route('images.show', { name: image.name })}}" />
+    @end
+
+    <div class="flex flex-row gap-2">
+      <button id="liked" onclick="like()" class="{{ liked === true ? 'text-blue-500' : '' }}">
+        like
+      </button>
+      <button id="disliked" onclick="dislike()" class="{{ liked === false ? 'text-red-500' : '' }}">
+        dislike
+      </button>
+    </div>
+  </div>
+
+  <script>
+    async function like() {
+      const response = await fetch('{{ route('feedbacks.like', { id: product.id }) }}', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      const data = await response.json();
+
+      document.getElementById('liked').className = data.liked === true ? 'text-blue-500' : '';
+      document.getElementById('disliked').className = data.liked === false ? 'text-red-500' : '';
+    }
+
+    async function dislike() {
+      const response = await fetch('{{ route('feedbacks.dislike', { id: product.id }) }}', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      const data = await response.json();
+
+      document.getElementById('liked').className = data.liked === true ? 'text-blue-500' : '';
+      document.getElementById('disliked').className = data.liked === false ? 'text-red-500' : '';
+    }
+
+    window.onload = () => {
+      console.log('Home page script')
+      console.log(document.getElementById('teste'))
+    }
+  </script>
 @end
 
 @end
