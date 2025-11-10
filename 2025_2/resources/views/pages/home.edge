@@ -2,4 +2,19 @@
   <h1 class="p-10 font-bold">
     Hello world!
   </h1>
+
+  @if(auth.isAuthenticated)
+  <p> Hello {{ auth.user.email }} </p>
+  @else
+    NAO TO LOGADO
+  @end
+
+  <p id="teste">paragrafo de teste</p>
+
+  <script>
+    window.onload = () => {
+      console.log('Home page script')
+      console.log(document.getElementById('teste'))
+    }
+  </script>
 @end

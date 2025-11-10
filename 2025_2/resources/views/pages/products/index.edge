@@ -2,6 +2,11 @@
 
 @slot('main')
 
+@if(auth.isAuthenticated)
+  <p> Hello {{ auth.user.email }} </p>
+@end
+
+
 @button({ type: 'submit' })
   <span>sasasa</span>
 @end

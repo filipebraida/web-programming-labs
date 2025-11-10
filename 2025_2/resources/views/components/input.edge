@@ -1,1 +1,13 @@
-<input class="input" {{ $props.toAttrs() }} />
+<div>
+  <input class="input" {{ $props.toAttrs() }}
+  @flashMessage(`errors.${name}`)
+    aria-invalid="true"
+  @end
+   />
+
+  @flashMessage(`errors.${name}`)
+    <div>
+      {{ $message }}
+    </div>
+  @end
+</div>

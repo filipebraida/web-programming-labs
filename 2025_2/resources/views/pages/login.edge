@@ -1,0 +1,43 @@
+@layout.app({ title: 'Login' })
+
+  @slot('main')
+    {{ inspect(flashMessages) }}
+
+    @form({ action: route('auth.create'), method: 'POST' })
+      <div class="space-y-12">
+        <div class="border-b border-gray-900/10 pb-12">
+          <h2 class="text-base/7 font-semibold text-gray-900">Login</h2>
+          <p class="mt-1 text-sm/6 text-gray-600">Esta informação será exibida publicamente, portanto, tenha cuidado com o que compartilha.</p>
+
+          <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
+            <div class="sm:col-span-3">
+              <label for="email" class="block text-sm/6 font-medium text-gray-900">E-mail</label>
+              <div class="mt-2">
+                @!input({
+                  type: 'text',
+                  name: 'email',
+                  placeholder: 'E-mail...',
+                })
+              </div>
+            </div>
+
+            <div class="sm:col-span-3">
+              <label for="first-name" class="block text-sm/6 font-medium text-gray-900">Senha</label>
+              <div class="mt-2">
+                @!input({
+                  type: 'password',
+                  name: 'password',
+                })
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="mt-6 flex items-center justify-end gap-x-6">
+        <button type="submit" class="btn">
+          Login
+        </button>
+      </div>
+    @end
+  @end
+@end
