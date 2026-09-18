@@ -11,7 +11,7 @@ Cada pasta segue o padrão `ANO_SEMESTRE` e contém o código produzido pela tur
 
 ## Projetos
 
-## 2021-2
+### 2021-2
 - **Ruralteca**: sistema de gerenciamento de vídeos.
 
 ### 2023-2
@@ -22,3 +22,6 @@ Cada pasta segue o padrão `ANO_SEMESTRE` e contém o código produzido pela tur
 
 ### 2025-2
 - **Ruralmerce**: sistema de e-commerce acadêmico, simulando um ambiente de compras online voltado à comunidade.
+
+### 2026-2
+- **Rural Storys**: plataforma de publicação e compartilhamento de histórias entre os usuários.
