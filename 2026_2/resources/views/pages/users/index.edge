@@ -1,0 +1,18 @@
+<html>
+  <head><title>VideoTeca</title></head>
+  <body>
+    <h1>Welcome to the Users Page</h1>
+    <nav><a href="{{ urlFor('users.create') }}">Create User</a></nav>
+    <ul>
+      @each(user in users)
+        <li>
+          <a href="{{ urlFor('users.show', { id: user.id }) }}">
+            {{ user.name }}
+            -
+            {{ user.email }}
+          </a>
+        </li>
+      @end
+    </ul>
+  </body>
+</html>

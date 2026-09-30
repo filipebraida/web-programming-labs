@@ -39,7 +39,7 @@ const shieldConfig = defineConfig({
      * Enable CSRF protection.
      * Protects against Cross-Site Request Forgery attacks.
      */
-    enabled: true,
+    enabled: false,
 
     /**
      * Routes that should be excluded from CSRF protection.
