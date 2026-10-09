@@ -7,7 +7,7 @@
       @each(user in users)
         <li>
           <a href="{{ urlFor('users.show', { id: user.id }) }}">
-            {{ user.name }}
+            {{ user.fullName }}
             -
             {{ user.email }}
           </a>

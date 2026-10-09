@@ -1,7 +1,4 @@
-@let(buttonTextFromSlot = await $slots.main())
-@let(buttonText = buttonTextFromSlot.trim() ? buttonTextFromSlot : ($props.get('text') ?? ''))
-@let(classes = [])
-
-<button {{ $props.except(['text']).merge({ class: classes }).toAttrs() }}>
-  {{{ buttonText }}}
-</button>
+<button type="submit">{{{ await $slots.header() }}}</button>
+@if($slots.footer)
+  <div class="footer">{{{ await $slots.footer() }}}</div>
+@end

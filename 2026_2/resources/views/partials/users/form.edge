@@ -1,0 +1,31 @@
+<form method="POST" action="{{ urlFor('users.store') }}">
+  <label for="name">Name:</label>
+  @!component('components/input', { type: 'text', name: 'fullName', required: false })
+  <br />
+  <br />
+  <label for="email">Email:</label>
+  @!component('components/input', { type: 'email', name: 'email', required: true })
+  <br />
+  <br />
+  <label for="password">Password:</label>
+  @!component('components/input', { type: 'password', name: 'password', required: true })
+  <br />
+  <br />
+  <label for="password">Password Confirmação:</label>
+  @!component('components/input', {
+    type: 'password',
+    name: 'passwordConfirmation',
+    required: true,
+  })
+  <br />
+  <br />
+  @component('components/button')
+    @slot('header')
+      <div>criar</div>
+      <div>usuario</div>
+    @end
+    @slot('footer')
+      <div>criar</div>
+    @end
+  @end
+</form>

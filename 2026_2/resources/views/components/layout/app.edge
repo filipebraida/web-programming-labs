@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>{{ title || 'Your default title' }}</title>
+    @if($slots.meta)
+      {{{ await $slots.meta() }}}
+    @end
+  </head>
+  <body>xxxx {{{ await $slots.main() }}}</body>
+</html>
