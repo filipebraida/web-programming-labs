@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Enviar vídeo · RuralStream</title>
+  <link href="https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,300;0,400;0,700;0,900;1,400&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="js/tailwind-config.js"></script>
+</head>
+<body class="bg-rural-950 text-rural-100 font-sans antialiased" data-pagina="enviar">
+
+  <main class="md:pl-60 pb-24 md:pb-10">
+    <div class="max-w-5xl mx-auto px-4 md:px-8 pt-8">
+      <h1 class="font-display text-3xl font-bold">Enviar vídeo</h1>
+      <p class="mt-1 text-sm text-rural-400">Vídeos verticais (9:16) de até 60 segundos. MP4 ou WebM, máximo 100 MB.</p>
+
+      <form id="form-envio" class="mt-8 grid md:grid-cols-[280px_minmax(0,1fr)] gap-8" novalidate>
+        <!-- Área de upload / prévia -->
+        <div>
+          <label id="zona" class="relative flex flex-col items-center justify-center gap-3 aspect-[9/16] rounded-2xl border-2 border-dashed border-rural-700 bg-rural-900 text-center cursor-pointer hover:border-brand transition-colors overflow-hidden">
+            <input id="arquivo" name="arquivo" type="file" accept="video/mp4,video/webm" class="sr-only">
+            <div id="instrucoes" class="flex flex-col items-center gap-3 p-6">
+              <span class="grid place-items-center w-14 h-14 rounded-full bg-rural-800 text-brand">
+                <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 16V4M7 9l5-5 5 5M4 20h16"/></svg>
+              </span>
+              <span class="font-medium">Arraste o vídeo aqui</span>
+              <span class="text-sm text-rural-400">ou clique para escolher</span>
+            </div>
+            <video id="previa" class="hidden absolute inset-0 w-full h-full object-cover" controls playsinline></video>
+          </label>
+          <div id="info-arquivo" class="hidden mt-3 flex items-center justify-between gap-2 text-sm">
+            <span id="nome-arquivo" class="truncate text-rural-300"></span>
+            <button type="button" id="trocar" class="shrink-0 text-brand hover:underline">Trocar</button>
+          </div>
+          <p id="erro-arquivo" class="hidden mt-3 text-sm text-red-400"></p>
+        </div>
+
+        <!-- Metadados -->
+        <div class="flex flex-col gap-5">
+          <label class="flex flex-col gap-1.5">
+            <span class="flex justify-between text-sm font-medium">Título <span class="font-normal text-rural-500"><span id="cont-titulo">0</span>/80</span></span>
+            <input name="titulo" required maxlength="80" placeholder="Dê um título ao seu vídeo" class="h-11 rounded-lg bg-rural-900 border border-rural-800 px-3 text-sm placeholder:text-rural-500 focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent">
+            <small class="hidden text-xs text-red-400" data-erro="titulo">Informe um título.</small>
+          </label>
+
+          <label class="flex flex-col gap-1.5">
+            <span class="text-sm font-medium">Descrição</span>
+            <textarea name="descricao" rows="4" maxlength="500" placeholder="Conte do que se trata. Use #tags para facilitar a busca." class="rounded-lg bg-rural-900 border border-rural-800 px-3 py-2.5 text-sm placeholder:text-rural-500 focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent resize-none"></textarea>
+          </label>
+
+          <label class="flex flex-col gap-1.5">
+            <span class="text-sm font-medium">Categoria</span>
+            <select name="categoria" required class="h-11 rounded-lg bg-rural-900 border border-rural-800 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-brand">
+              <option value="">Selecione...</option>
+            </select>
+            <small class="hidden text-xs text-red-400" data-erro="categoria">Escolha uma categoria.</small>
+          </label>
+
+          <fieldset>
+            <legend class="text-sm font-medium">Visibilidade</legend>
+            <div class="mt-2 grid sm:grid-cols-3 gap-2">
+              <label class="flex items-start gap-3 p-3 rounded-lg border border-rural-800 bg-rural-900 cursor-pointer has-[:checked]:border-brand">
+                <input type="radio" name="visibilidade" value="publico" checked class="mt-1 accent-brand">
+                <span><span class="block text-sm font-medium">Público</span><span class="block text-xs text-rural-400">Todos podem ver</span></span>
+              </label>
+              <label class="flex items-start gap-3 p-3 rounded-lg border border-rural-800 bg-rural-900 cursor-pointer has-[:checked]:border-brand">
+                <input type="radio" name="visibilidade" value="nao-listado" class="mt-1 accent-brand">
+                <span><span class="block text-sm font-medium">Não listado</span><span class="block text-xs text-rural-400">Só quem tem o link</span></span>
+              </label>
+              <label class="flex items-start gap-3 p-3 rounded-lg border border-rural-800 bg-rural-900 cursor-pointer has-[:checked]:border-brand">
+                <input type="radio" name="visibilidade" value="privado" class="mt-1 accent-brand">
+                <span><span class="block text-sm font-medium">Privado</span><span class="block text-xs text-rural-400">Só você</span></span>
+              </label>
+            </div>
+          </fieldset>
+
+          <label class="flex items-center gap-3 text-sm text-rural-300">
+            <input type="checkbox" name="comentarios" checked class="w-4 h-4 accent-brand">
+            Permitir comentários
+          </label>
+
+          <!-- Progresso do envio -->
+          <div id="progresso" class="hidden">
+            <div class="flex justify-between text-sm"><span>Enviando...</span><span id="porcentagem">0%</span></div>
+            <div class="mt-2 h-2 rounded-full bg-rural-800 overflow-hidden"><div id="barra" class="h-full w-0 bg-brand transition-all"></div></div>
+          </div>
+
+          <div class="flex gap-3 pt-2">
+            <a href="index.html" class="h-11 px-5 grid place-items-center rounded-lg border border-rural-700 text-sm font-medium hover:bg-rural-900">Cancelar</a>
+            <button id="publicar" class="h-11 px-6 rounded-lg bg-brand text-brand-contraste text-sm font-semibold hover:bg-brand-hover disabled:opacity-50">Publicar</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </main>
+
+  <script src="js/dados.js"></script>
+  <script src="js/layout.js"></script>
+  <script>
+    const form = document.getElementById('form-envio');
+    const zona = document.getElementById('zona');
+    const inputArquivo = document.getElementById('arquivo');
+    const previa = document.getElementById('previa');
+    let arquivo = null;
+
+    form.categoria.insertAdjacentHTML('beforeend',
+      Object.entries(CATEGORIAS).map(([k, r]) => `<option value="${k}">${r}</option>`).join(''));
+
+    form.titulo.addEventListener('input', () => {
+      document.getElementById('cont-titulo').textContent = form.titulo.value.length;
+    });
+
+    function selecionarArquivo(f) {
+      const erro = document.getElementById('erro-arquivo');
+      erro.classList.add('hidden');
+      if (!f) return;
+      if (!f.type.startsWith('video/')) { erro.textContent = 'Formato não suportado.'; erro.classList.remove('hidden'); return; }
+      if (f.size > 100 * 1024 * 1024) { erro.textContent = 'Arquivo maior que 100 MB.'; erro.classList.remove('hidden'); return; }
+      arquivo = f;
+      previa.src = URL.createObjectURL(f);
+      previa.classList.remove('hidden');
+      document.getElementById('instrucoes').classList.add('hidden');
+      document.getElementById('info-arquivo').classList.remove('hidden');
+      document.getElementById('nome-arquivo').textContent = `${f.name} · ${(f.size / 1024 / 1024).toFixed(1)} MB`;
+      if (!form.titulo.value) form.titulo.value = f.name.replace(/\.[^.]+$/, '');
+    }
+
+    inputArquivo.addEventListener('change', () => selecionarArquivo(inputArquivo.files[0]));
+    document.getElementById('trocar').addEventListener('click', () => inputArquivo.click());
+
+    // Arrastar e soltar
+    ['dragenter', 'dragover'].forEach((ev) => zona.addEventListener(ev, (e) => { e.preventDefault(); zona.classList.add('border-brand'); }));
+    ['dragleave', 'drop'].forEach((ev) => zona.addEventListener(ev, (e) => { e.preventDefault(); zona.classList.remove('border-brand'); }));
+    zona.addEventListener('drop', (e) => selecionarArquivo(e.dataTransfer.files[0]));
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      let ok = true;
+      for (const campo of ['titulo', 'categoria']) {
+        const invalido = !form.elements[campo].checkValidity();
+        form.querySelector(`[data-erro="${campo}"]`).classList.toggle('hidden', !invalido);
+        if (invalido) ok = false;
+      }
+      if (!arquivo) {
+        const erro = document.getElementById('erro-arquivo');
+        erro.textContent = 'Selecione um vídeo.';
+        erro.classList.remove('hidden');
+        ok = false;
+      }
+      if (!ok) return;
+
+      // Simula o upload. Na versão real: fetch('/api/videos', { method: 'POST', body: new FormData(form) })
+      document.getElementById('publicar').disabled = true;
+      document.getElementById('progresso').classList.remove('hidden');
+      let p = 0;
+      const timer = setInterval(() => {
+        p = Math.min(100, p + 8);
+        document.getElementById('barra').style.width = p + '%';
+        document.getElementById('porcentagem').textContent = p + '%';
+        if (p === 100) {
+          clearInterval(timer);
+          const dados = Object.fromEntries(new FormData(form));
+          const novo = {
+            id: Date.now(), titulo: dados.titulo, descricao: dados.descricao, categoria: dados.categoria,
+            autorId: SESSAO.id, visualizacoes: 0, curtidas: 0, comentarios: 0,
+            duracao: Math.round(previa.duration) || 30, criadoEm: new Date().toISOString(),
+            visibilidade: dados.visibilidade, src: FONTES[0],
+          };
+          localStorage.setItem('rs_videos', JSON.stringify([novo, ...VIDEOS_ENVIADOS]));
+          location.href = 'perfil.html?enviado=1';
+        }
+      }, 120);
+    });
+  </script>
+</body>
+</html>

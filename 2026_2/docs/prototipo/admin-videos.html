@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vídeos · Administração · RuralStream</title>
+  <link href="https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,300;0,400;0,700;0,900;1,400&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="js/tailwind-config.js"></script>
+</head>
+<body class="bg-rural-950 text-rural-100 font-sans antialiased" data-pagina="videos">
+
+  <main class="md:pl-60 pb-24 md:pb-10">
+    <div class="max-w-6xl mx-auto px-4 md:px-8 pt-8">
+      <p class="text-xs font-semibold uppercase tracking-wider text-brand">Administração</p>
+      <div class="mt-1 flex flex-wrap items-end justify-between gap-4">
+        <h1 class="font-display text-3xl font-bold">Vídeos</h1>
+        <p id="resumo" class="text-sm text-rural-400"></p>
+      </div>
+
+      <!-- Filtros -->
+      <div class="mt-6 flex flex-col sm:flex-row gap-3">
+        <input id="filtro-texto" placeholder="Buscar por título ou @autor" class="flex-1 h-10 px-3 rounded-lg bg-rural-900 border border-rural-800 text-sm placeholder:text-rural-500 focus:outline-none focus:ring-2 focus:ring-brand">
+        <select id="filtro-categoria" class="h-10 px-3 rounded-lg bg-rural-900 border border-rural-800 text-sm focus:outline-none focus:ring-2 focus:ring-brand">
+          <option value="">Todas as categorias</option>
+        </select>
+        <select id="filtro-visibilidade" class="h-10 px-3 rounded-lg bg-rural-900 border border-rural-800 text-sm focus:outline-none focus:ring-2 focus:ring-brand">
+          <option value="">Toda visibilidade</option>
+          <option value="publico">Público</option>
+          <option value="nao-listado">Não listado</option>
+          <option value="privado">Privado</option>
+        </select>
+      </div>
+
+      <!-- Ações em lote -->
+      <div id="barra-lote" class="hidden mt-4 flex items-center justify-between gap-3 px-4 py-2.5 rounded-lg bg-rural-900 text-sm">
+        <span><strong id="qtd-selecionados"></strong> selecionado(s)</span>
+        <button id="remover-lote" class="h-8 px-3 rounded-md text-sm font-medium text-red-500 hover:bg-red-500/10">Remover selecionados</button>
+      </div>
+
+      <!-- Tabela -->
+      <div class="mt-4 rounded-xl border border-rural-800 overflow-x-auto">
+        <table class="w-full text-sm">
+          <thead class="bg-rural-900 text-left text-xs uppercase tracking-wider text-rural-400">
+            <tr>
+              <th class="pl-4 py-3 w-8"><input type="checkbox" id="selecionar-todos" class="w-4 h-4 accent-brand"></th>
+              <th class="px-4 py-3 font-medium">Vídeo</th>
+              <th class="hidden md:table-cell px-4 py-3 font-medium">Autor</th>
+              <th class="hidden lg:table-cell px-4 py-3 font-medium">Categoria</th>
+              <th class="hidden lg:table-cell px-4 py-3 font-medium">Visibilidade</th>
+              <th class="hidden sm:table-cell px-4 py-3 font-medium text-right"><button data-ordenar="visualizacoes" class="uppercase tracking-wider whitespace-nowrap hover:text-white">Views ↕</button></th>
+              <th class="hidden xl:table-cell px-4 py-3 font-medium text-right"><button data-ordenar="curtidas" class="uppercase tracking-wider whitespace-nowrap hover:text-white">Curtidas ↕</button></th>
+              <th class="hidden lg:table-cell px-4 py-3 font-medium"><button data-ordenar="criadoEm" class="uppercase tracking-wider whitespace-nowrap hover:text-white">Publicado ↕</button></th>
+              <th class="px-4 py-3"></th>
+            </tr>
+          </thead>
+          <tbody id="linhas" class="divide-y divide-rural-800"></tbody>
+        </table>
+        <p id="vazio" class="hidden py-12 text-center text-sm text-rural-400">Nenhum vídeo encontrado.</p>
+      </div>
+
+      <!-- Paginação -->
+      <div class="mt-4 flex items-center justify-between text-sm">
+        <p id="info-pagina" class="text-rural-400"></p>
+        <div class="flex gap-2">
+          <button id="anterior" class="h-9 px-3 rounded-lg border border-rural-800 hover:bg-rural-900 disabled:opacity-40 disabled:hover:bg-transparent">Anterior</button>
+          <button id="proxima" class="h-9 px-3 rounded-lg border border-rural-800 hover:bg-rural-900 disabled:opacity-40 disabled:hover:bg-transparent">Próxima</button>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script src="js/dados.js"></script>
+  <script src="js/layout.js"></script>
+  <script>
+    const POR_PAGINA = 10;
+    let pagina = 1;
+    let ordem = { campo: 'criadoEm', asc: false };
+    const selecionados = new Set();
+    const ROTULO_VISIBILIDADE = { publico: 'Público', 'nao-listado': 'Não listado', privado: 'Privado' };
+
+    document.getElementById('filtro-categoria').insertAdjacentHTML('beforeend',
+      Object.entries(CATEGORIAS).map(([k, r]) => `<option value="${k}">${r}</option>`).join(''));
+
+    function filtrar() {
+      const texto = document.getElementById('filtro-texto').value.toLowerCase().replace(/^@/, '');
+      const categoria = document.getElementById('filtro-categoria').value;
+      const visibilidade = document.getElementById('filtro-visibilidade').value;
+      return VIDEOS
+        .filter((v) => {
+          const autor = buscarUsuario(v.autorId);
+          return (!texto || `${v.titulo} ${autor?.usuario}`.toLowerCase().includes(texto))
+            && (!categoria || v.categoria === categoria)
+            && (!visibilidade || v.visibilidade === visibilidade);
+        })
+        .sort((a, b) => {
+          const r = a[ordem.campo] > b[ordem.campo] ? 1 : a[ordem.campo] < b[ordem.campo] ? -1 : 0;
+          return ordem.asc ? r : -r;
+        });
+    }
+
+    function render() {
+      const lista = filtrar();
+      const totalPaginas = Math.max(1, Math.ceil(lista.length / POR_PAGINA));
+      pagina = Math.min(pagina, totalPaginas);
+      const visiveis = lista.slice((pagina - 1) * POR_PAGINA, pagina * POR_PAGINA);
+
+      document.getElementById('linhas').innerHTML = visiveis.map((v) => {
+        const autor = buscarUsuario(v.autorId);
+        return `<tr class="hover:bg-rural-900/60">
+          <td class="pl-4 py-3"><input type="checkbox" data-selecionar="${v.id}" ${selecionados.has(v.id) ? 'checked' : ''} class="w-4 h-4 accent-brand"></td>
+          <td class="px-4 py-3">
+            <a href="assistir.html?id=${v.id}" class="flex items-center gap-3">
+              <span class="shrink-0 w-9 aspect-[9/16] rounded" style="background:${corPorId(v.id)}"></span>
+              <span class="min-w-0">
+                <span class="block font-medium text-white line-clamp-1">${v.titulo}</span>
+                <span class="block text-xs text-rural-400">${formatarDuracao(v.duracao)} · ID ${v.id}</span>
+                <!-- Campos agrupados aqui quando a coluna está escondida -->
+                <span class="lg:hidden mt-0.5 flex flex-wrap gap-x-2 text-xs text-rural-400">
+                  <span class="md:hidden">@${autor.usuario}</span>
+                  <span>${CATEGORIAS[v.categoria]}</span>
+                  <span>${ROTULO_VISIBILIDADE[v.visibilidade]}</span>
+                  <span class="sm:hidden">${formatarNumero(v.visualizacoes)} views</span>
+                  <span>${formatarData(v.criadoEm)}</span>
+                </span>
+              </span>
+            </a>
+          </td>
+          <td class="hidden md:table-cell px-4 py-3"><a href="admin-usuario.html?id=${autor.id}" class="text-rural-300 hover:text-brand">@${autor.usuario}</a></td>
+          <td class="hidden lg:table-cell px-4 py-3 text-rural-300">${CATEGORIAS[v.categoria]}</td>
+          <td class="hidden lg:table-cell px-4 py-3 text-rural-300">${ROTULO_VISIBILIDADE[v.visibilidade]}</td>
+          <td class="hidden sm:table-cell px-4 py-3 text-right tabular-nums">${formatarNumero(v.visualizacoes)}</td>
+          <td class="hidden xl:table-cell px-4 py-3 text-right tabular-nums">${formatarNumero(v.curtidas)}</td>
+          <td class="hidden lg:table-cell px-4 py-3 text-rural-400 whitespace-nowrap">${formatarData(v.criadoEm)}</td>
+          <td class="px-4 py-3 text-right">
+            <div class="flex flex-col lg:flex-row items-end lg:items-center justify-end gap-1 lg:gap-3">
+              <a href="assistir.html?id=${v.id}" class="text-brand hover:underline">Ver</a>
+              <button data-remover="${v.id}" class="text-red-500 hover:underline">Remover</button>
+            </div>
+          </td>
+        </tr>`;
+      }).join('');
+
+      document.getElementById('vazio').classList.toggle('hidden', lista.length > 0);
+      document.getElementById('info-pagina').textContent = `Página ${pagina} de ${totalPaginas}`;
+      document.getElementById('anterior').disabled = pagina === 1;
+      document.getElementById('proxima').disabled = pagina === totalPaginas;
+      document.getElementById('selecionar-todos').checked = visiveis.length > 0 && visiveis.every((v) => selecionados.has(v.id));
+      document.getElementById('barra-lote').classList.toggle('hidden', selecionados.size === 0);
+      document.getElementById('qtd-selecionados').textContent = selecionados.size;
+
+      const totalViews = VIDEOS.reduce((s, v) => s + v.visualizacoes, 0);
+      document.getElementById('resumo').textContent = `${VIDEOS.length} vídeos · ${formatarNumero(totalViews)} visualizações · ${lista.length} no filtro`;
+    }
+
+    function remover(ids) {
+      ids.forEach((id) => { VIDEOS.splice(VIDEOS.findIndex((v) => v.id === id), 1); selecionados.delete(id); });
+      render(); // TODO: DELETE /api/videos/{id}
+    }
+
+    document.getElementById('linhas').addEventListener('click', (e) => {
+      const id = Number(e.target.dataset.remover);
+      if (id && confirm('Remover este vídeo?')) remover([id]);
+    });
+    document.getElementById('linhas').addEventListener('change', (e) => {
+      const id = Number(e.target.dataset.selecionar);
+      if (!id) return;
+      e.target.checked ? selecionados.add(id) : selecionados.delete(id);
+      render();
+    });
+    document.getElementById('selecionar-todos').addEventListener('change', (e) => {
+      document.querySelectorAll('[data-selecionar]').forEach((c) => {
+        const id = Number(c.dataset.selecionar);
+        e.target.checked ? selecionados.add(id) : selecionados.delete(id);
+      });
+      render();
+    });
+    document.getElementById('remover-lote').addEventListener('click', () => {
+      if (confirm(`Remover ${selecionados.size} vídeo(s)?`)) remover([...selecionados]);
+    });
+
+    ['filtro-texto', 'filtro-categoria', 'filtro-visibilidade'].forEach((id) =>
+      document.getElementById(id).addEventListener('input', () => { pagina = 1; render(); }));
+    document.querySelectorAll('[data-ordenar]').forEach((b) => b.addEventListener('click', () => {
+      const campo = b.dataset.ordenar;
+      ordem = { campo, asc: ordem.campo === campo ? !ordem.asc : false };
+      render();
+    }));
+    document.getElementById('anterior').addEventListener('click', () => { pagina--; render(); });
+    document.getElementById('proxima').addEventListener('click', () => { pagina++; render(); });
+
+    render();
+  </script>
+</body>
+</html>

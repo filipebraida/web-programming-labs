@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Buscar · RuralStream</title>
+  <link href="https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,300;0,400;0,700;0,900;1,400&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="js/tailwind-config.js"></script>
+</head>
+<body class="bg-rural-950 text-rural-100 font-sans antialiased" data-pagina="busca">
+
+  <main class="md:pl-60 pb-24 md:pb-10">
+    <div class="max-w-6xl mx-auto px-4 md:px-8 pt-8">
+      <form id="form-busca" class="flex flex-col sm:flex-row gap-3">
+        <label class="flex-1 flex items-center gap-3 h-12 px-4 rounded-xl bg-rural-900 border border-rural-800 focus-within:ring-2 focus-within:ring-brand">
+          <svg class="w-5 h-5 text-rural-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+          <input id="q" name="q" autofocus placeholder="Buscar vídeos, #tags ou @pessoas" class="flex-1 bg-transparent placeholder:text-rural-500 focus:outline-none">
+        </label>
+        <select id="ordem" class="h-12 px-3 rounded-xl bg-rural-900 border border-rural-800 text-sm focus:outline-none focus:ring-2 focus:ring-brand">
+          <option value="relevancia">Mais relevantes</option>
+          <option value="recentes">Mais recentes</option>
+          <option value="vistos">Mais vistos</option>
+          <option value="curtidos">Mais curtidos</option>
+        </select>
+        <select id="categoria" class="h-12 px-3 rounded-xl bg-rural-900 border border-rural-800 text-sm focus:outline-none focus:ring-2 focus:ring-brand">
+          <option value="">Todas as categorias</option>
+        </select>
+      </form>
+
+      <!-- Pessoas encontradas -->
+      <section id="secao-pessoas" class="hidden mt-10">
+        <h2 class="text-sm font-semibold uppercase tracking-wider text-rural-400">Pessoas</h2>
+        <div id="pessoas" class="mt-4 flex gap-3 overflow-x-auto pb-2"></div>
+      </section>
+
+      <!-- Vídeos encontrados -->
+      <section class="mt-10">
+        <h2 id="titulo-resultados" class="text-sm font-semibold uppercase tracking-wider text-rural-400">Vídeos</h2>
+        <div id="resultados" class="mt-4 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-x-4 gap-y-6"></div>
+        <div id="vazio" class="hidden py-20 text-center">
+          <p class="font-display text-xl font-bold">Nada encontrado</p>
+          <p class="mt-2 text-sm text-rural-400">Tente outras palavras ou remova os filtros.</p>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <script src="js/dados.js"></script>
+  <script src="js/layout.js"></script>
+  <script>
+    const campoQ = document.getElementById('q');
+    const campoOrdem = document.getElementById('ordem');
+    const campoCategoria = document.getElementById('categoria');
+
+    campoCategoria.insertAdjacentHTML('beforeend',
+      Object.entries(CATEGORIAS).map(([k, r]) => `<option value="${k}">${r}</option>`).join(''));
+
+    campoQ.value = parametro('q') || '';
+
+    const normalizar = (t) => t.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+
+    function buscar() {
+      const termo = normalizar(campoQ.value.trim().replace(/^[@#]/, ''));
+
+      // Vídeos: busca no título, descrição, categoria e autor
+      let videos = VIDEOS.filter((v) => {
+        const autor = buscarUsuario(v.autorId);
+        const texto = normalizar(`${v.titulo} ${v.descricao} ${v.categoria} ${autor?.usuario}`);
+        return (!termo || texto.includes(termo)) && (!campoCategoria.value || v.categoria === campoCategoria.value);
+      });
+
+      const ordenacoes = {
+        recentes: (a, b) => new Date(b.criadoEm) - new Date(a.criadoEm),
+        vistos: (a, b) => b.visualizacoes - a.visualizacoes,
+        curtidos: (a, b) => b.curtidas - a.curtidas,
+      };
+      if (ordenacoes[campoOrdem.value]) videos = [...videos].sort(ordenacoes[campoOrdem.value]);
+
+      document.getElementById('resultados').innerHTML = videos.map((v) => cardVideo(v)).join('');
+      document.getElementById('vazio').classList.toggle('hidden', videos.length > 0);
+      document.getElementById('titulo-resultados').textContent = `Vídeos · ${videos.length}`;
+
+      // Pessoas: só quando há termo
+      const pessoas = termo ? USUARIOS.filter((u) => normalizar(`${u.nome} ${u.usuario}`).includes(termo) && u.status === 'ativo') : [];
+      document.getElementById('secao-pessoas').classList.toggle('hidden', pessoas.length === 0);
+      document.getElementById('pessoas').innerHTML = pessoas.map((u) => `
+        <a href="perfil.html?id=${u.id}" class="shrink-0 w-40 flex flex-col items-center gap-2 p-4 rounded-xl bg-rural-900 hover:bg-rural-800 text-center">
+          ${avatar(u, 'w-14 h-14 text-base')}
+          <span class="text-sm font-medium truncate w-full">${u.nome}</span>
+          <span class="-mt-1.5 text-xs text-rural-400">@${u.usuario}</span>
+        </a>`).join('');
+
+      // Mantém a busca na URL (permite compartilhar o link)
+      const url = new URL(location);
+      termo ? url.searchParams.set('q', campoQ.value.trim()) : url.searchParams.delete('q');
+      history.replaceState(null, '', url);
+    }
+
+    let espera;
+    campoQ.addEventListener('input', () => { clearTimeout(espera); espera = setTimeout(buscar, 250); });
+    campoOrdem.addEventListener('change', buscar);
+    campoCategoria.addEventListener('change', buscar);
+    document.getElementById('form-busca').addEventListener('submit', (e) => { e.preventDefault(); buscar(); });
+
+    buscar();
+  </script>
+</body>
+</html>

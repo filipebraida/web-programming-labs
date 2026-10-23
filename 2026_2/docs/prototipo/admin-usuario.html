@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Detalhe do usuário · Administração · RuralStream</title>
+  <link href="https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,300;0,400;0,700;0,900;1,400&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="js/tailwind-config.js"></script>
+</head>
+<body class="bg-rural-950 text-rural-100 font-sans antialiased" data-pagina="usuarios">
+
+  <main class="md:pl-60 pb-24 md:pb-10">
+    <div class="max-w-6xl mx-auto px-4 md:px-8 pt-8">
+      <a href="admin-usuarios.html" class="text-sm text-rural-400 hover:text-white">← Usuários</a>
+
+      <!-- Cabeçalho -->
+      <header class="mt-4 flex flex-col sm:flex-row sm:items-center gap-5">
+        <div id="avatar"></div>
+        <div class="flex-1 min-w-0">
+          <div class="flex flex-wrap items-center gap-3">
+            <h1 id="nome" class="font-display text-3xl font-bold"></h1>
+            <span id="status" class="inline-flex px-2 py-0.5 rounded-full text-xs font-medium capitalize"></span>
+          </div>
+          <p id="usuario" class="text-rural-400"></p>
+        </div>
+        <div class="flex flex-wrap gap-2">
+          <a id="ver-perfil" class="h-10 px-4 inline-flex items-center rounded-lg border border-rural-700 text-sm font-medium hover:bg-rural-900">Ver perfil público</a>
+          <button id="alternar-status" class="h-10 px-4 rounded-lg text-sm font-medium"></button>
+        </div>
+      </header>
+
+      <div class="mt-10 grid lg:grid-cols-[320px_minmax(0,1fr)] gap-8">
+        <!-- Coluna de dados -->
+        <aside class="flex flex-col gap-6">
+          <section class="rounded-xl border border-rural-800 p-5">
+            <h2 class="text-sm font-semibold uppercase tracking-wider text-rural-400">Dados</h2>
+            <dl id="dados" class="mt-4 flex flex-col gap-3 text-sm"></dl>
+          </section>
+
+          <section class="rounded-xl border border-rural-800 p-5">
+            <h2 class="text-sm font-semibold uppercase tracking-wider text-rural-400">Papel</h2>
+            <select id="papel" class="mt-4 w-full h-10 px-3 rounded-lg bg-rural-900 border border-rural-800 text-sm focus:outline-none focus:ring-2 focus:ring-brand">
+              <option value="usuario">Usuário</option>
+              <option value="moderador">Moderador</option>
+              <option value="admin">Admin</option>
+            </select>
+            <p id="papel-salvo" class="hidden mt-2 text-xs text-brand">Papel atualizado.</p>
+          </section>
+
+          <section class="rounded-xl border border-rural-800 p-5">
+            <h2 class="text-sm font-semibold uppercase tracking-wider text-rural-400">Atividade recente</h2>
+            <ol id="atividade" class="mt-4 flex flex-col gap-3 text-sm"></ol>
+          </section>
+        </aside>
+
+        <!-- Coluna de vídeos -->
+        <section>
+          <div class="grid grid-cols-3 gap-3">
+            <div class="rounded-xl bg-rural-900 p-4"><p class="text-xs text-rural-400">Vídeos</p><p id="m-videos" class="mt-1 font-display text-2xl font-bold"></p></div>
+            <div class="rounded-xl bg-rural-900 p-4"><p class="text-xs text-rural-400">Visualizações</p><p id="m-views" class="mt-1 font-display text-2xl font-bold"></p></div>
+            <div class="rounded-xl bg-rural-900 p-4"><p class="text-xs text-rural-400">Curtidas</p><p id="m-curtidas" class="mt-1 font-display text-2xl font-bold"></p></div>
+          </div>
+
+          <h2 class="mt-8 text-sm font-semibold uppercase tracking-wider text-rural-400">Vídeos publicados</h2>
+          <ul id="videos" class="mt-4 divide-y divide-rural-800 rounded-xl border border-rural-800"></ul>
+          <p id="sem-videos" class="hidden mt-4 text-sm text-rural-400">Este usuário ainda não publicou vídeos.</p>
+        </section>
+      </div>
+    </div>
+  </main>
+
+  <script src="js/dados.js"></script>
+  <script src="js/layout.js"></script>
+  <script>
+    const u = buscarUsuario(parametro('id')) || USUARIOS[1];
+    const videos = videosDoUsuario(u.id);
+    const ESTILO_STATUS = { ativo: 'bg-[#52AE32]/20 text-[#95C11F]', pendente: 'bg-[#EF7D00]/20 text-[#F5A04A]', suspenso: 'bg-[#BC1413]/25 text-red-300' };
+
+    document.title = `${u.nome} · Administração · RuralStream`;
+    document.getElementById('avatar').innerHTML = avatar(u, 'w-20 h-20 text-2xl');
+    document.getElementById('nome').textContent = u.nome;
+    document.getElementById('usuario').textContent = `@${u.usuario} · ID ${u.id}`;
+    document.getElementById('ver-perfil').href = `perfil.html?id=${u.id}`;
+    document.getElementById('papel').value = u.papel;
+
+    function renderStatus() {
+      const s = document.getElementById('status');
+      s.textContent = u.status;
+      s.className = `inline-flex px-2 py-0.5 rounded-full text-xs font-medium capitalize ${ESTILO_STATUS[u.status]}`;
+      const b = document.getElementById('alternar-status');
+      const suspenso = u.status === 'suspenso';
+      b.textContent = suspenso ? 'Reativar conta' : 'Suspender conta';
+      b.className = `h-10 px-4 rounded-lg text-sm font-medium ${suspenso ? 'bg-brand text-brand-contraste hover:bg-brand-hover' : 'border border-red-800 text-red-400 hover:bg-red-950'}`;
+    }
+
+    document.getElementById('alternar-status').addEventListener('click', () => {
+      const acao = u.status === 'suspenso' ? 'reativar' : 'suspender';
+      if (!confirm(`Deseja ${acao} @${u.usuario}?`)) return;
+      u.status = acao === 'reativar' ? 'ativo' : 'suspenso'; // TODO: PATCH /api/usuarios/{id}
+      renderStatus();
+    });
+
+    document.getElementById('papel').addEventListener('change', (e) => {
+      u.papel = e.target.value; // TODO: PATCH /api/usuarios/{id}
+      document.getElementById('papel-salvo').classList.remove('hidden');
+    });
+
+    const dados = [
+      ['Nome', u.nome], ['E-mail', u.email], ['Usuário', '@' + u.usuario],
+      ['Cadastro', formatarData(u.criadoEm)], ['Bio', u.bio || '—'],
+    ];
+    document.getElementById('dados').innerHTML = dados.map(([k, v]) => `
+      <div><dt class="text-xs text-rural-500">${k}</dt><dd class="mt-0.5 text-rural-200 break-words">${v}</dd></div>`).join('');
+
+    const atividade = [
+      ...videos.slice(0, 3).map((v) => ({ texto: `Publicou "${v.titulo}"`, quando: v.criadoEm })),
+      { texto: 'Criou a conta', quando: u.criadoEm },
+    ];
+    document.getElementById('atividade').innerHTML = atividade.map((a) => `
+      <li class="flex gap-3"><span class="mt-1.5 w-1.5 h-1.5 shrink-0 rounded-full bg-brand"></span>
+      <span><span class="block text-rural-200">${a.texto}</span><span class="block text-xs text-rural-500">${tempoRelativo(a.quando)}</span></span></li>`).join('');
+
+    document.getElementById('m-videos').textContent = videos.length;
+    document.getElementById('m-views').textContent = formatarNumero(videos.reduce((s, v) => s + v.visualizacoes, 0));
+    document.getElementById('m-curtidas').textContent = formatarNumero(videos.reduce((s, v) => s + v.curtidas, 0));
+
+    function renderVideos() {
+      document.getElementById('videos').innerHTML = videos.map((v) => `
+        <li class="flex items-center gap-4 p-3" data-id="${v.id}">
+          <a href="assistir.html?id=${v.id}" class="shrink-0 w-12 aspect-[9/16] rounded-md" style="background:${corPorId(v.id)}"></a>
+          <div class="flex-1 min-w-0">
+            <a href="assistir.html?id=${v.id}" class="block font-medium truncate hover:text-brand">${v.titulo}</a>
+            <p class="text-xs text-rural-400">${CATEGORIAS[v.categoria]} · ${formatarNumero(v.visualizacoes)} visualizações · ${tempoRelativo(v.criadoEm)}</p>
+          </div>
+          <button data-remover="${v.id}" class="shrink-0 h-8 px-3 rounded-lg text-xs font-medium text-red-400 hover:bg-red-950">Remover</button>
+        </li>`).join('');
+      document.getElementById('sem-videos').classList.toggle('hidden', videos.length > 0);
+      document.getElementById('m-videos').textContent = videos.length;
+    }
+
+    document.getElementById('videos').addEventListener('click', (e) => {
+      const id = Number(e.target.dataset.remover);
+      if (!id || !confirm('Remover este vídeo?')) return;
+      videos.splice(videos.findIndex((v) => v.id === id), 1); // TODO: DELETE /api/videos/{id}
+      renderVideos();
+    });
+
+    renderStatus();
+    renderVideos();
+  </script>
+</body>
+</html>

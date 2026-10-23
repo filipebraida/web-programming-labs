@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Usuários · Administração · RuralStream</title>
+  <link href="https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,300;0,400;0,700;0,900;1,400&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="js/tailwind-config.js"></script>
+</head>
+<body class="bg-rural-950 text-rural-100 font-sans antialiased" data-pagina="usuarios">
+
+  <main class="md:pl-60 pb-24 md:pb-10">
+    <div class="max-w-6xl mx-auto px-4 md:px-8 pt-8">
+      <p class="text-xs font-semibold uppercase tracking-wider text-brand">Administração</p>
+      <div class="mt-1 flex flex-wrap items-end justify-between gap-4">
+        <h1 class="font-display text-3xl font-bold">Usuários</h1>
+        <p id="resumo" class="text-sm text-rural-400"></p>
+      </div>
+
+      <!-- Filtros -->
+      <div class="mt-6 flex flex-col sm:flex-row gap-3">
+        <input id="filtro-texto" placeholder="Buscar por nome, usuário ou e-mail" class="flex-1 h-10 px-3 rounded-lg bg-rural-900 border border-rural-800 text-sm placeholder:text-rural-500 focus:outline-none focus:ring-2 focus:ring-brand">
+        <select id="filtro-papel" class="h-10 px-3 rounded-lg bg-rural-900 border border-rural-800 text-sm focus:outline-none focus:ring-2 focus:ring-brand">
+          <option value="">Todos os papéis</option>
+          <option value="admin">Admin</option>
+          <option value="moderador">Moderador</option>
+          <option value="usuario">Usuário</option>
+        </select>
+        <select id="filtro-status" class="h-10 px-3 rounded-lg bg-rural-900 border border-rural-800 text-sm focus:outline-none focus:ring-2 focus:ring-brand">
+          <option value="">Todos os status</option>
+          <option value="ativo">Ativo</option>
+          <option value="pendente">Pendente</option>
+          <option value="suspenso">Suspenso</option>
+        </select>
+      </div>
+
+      <!-- Tabela -->
+      <div class="mt-4 rounded-xl border border-rural-800 overflow-x-auto">
+        <table class="w-full min-w-[720px] text-sm">
+          <thead class="bg-rural-900 text-left text-xs uppercase tracking-wider text-rural-400">
+            <tr>
+              <th class="px-4 py-3 font-medium"><button data-ordenar="nome" class="uppercase tracking-wider hover:text-white">Usuário ↕</button></th>
+              <th class="px-4 py-3 font-medium">E-mail</th>
+              <th class="px-4 py-3 font-medium">Papel</th>
+              <th class="px-4 py-3 font-medium">Status</th>
+              <th class="px-4 py-3 font-medium text-right"><button data-ordenar="videos" class="uppercase tracking-wider hover:text-white">Vídeos ↕</button></th>
+              <th class="px-4 py-3 font-medium"><button data-ordenar="criadoEm" class="uppercase tracking-wider hover:text-white">Cadastro ↕</button></th>
+              <th class="px-4 py-3"></th>
+            </tr>
+          </thead>
+          <tbody id="linhas" class="divide-y divide-rural-800"></tbody>
+        </table>
+        <p id="vazio" class="hidden py-12 text-center text-sm text-rural-400">Nenhum usuário encontrado.</p>
+      </div>
+
+      <!-- Paginação -->
+      <div class="mt-4 flex items-center justify-between text-sm">
+        <p id="info-pagina" class="text-rural-400"></p>
+        <div class="flex gap-2">
+          <button id="anterior" class="h-9 px-3 rounded-lg border border-rural-800 hover:bg-rural-900 disabled:opacity-40 disabled:hover:bg-transparent">Anterior</button>
+          <button id="proxima" class="h-9 px-3 rounded-lg border border-rural-800 hover:bg-rural-900 disabled:opacity-40 disabled:hover:bg-transparent">Próxima</button>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script src="js/dados.js"></script>
+  <script src="js/layout.js"></script>
+  <script>
+    const POR_PAGINA = 8;
+    let pagina = 1;
+    let ordem = { campo: 'nome', asc: true };
+
+    const ESTILO_STATUS = {
+      ativo: 'bg-[#52AE32]/20 text-[#95C11F]',
+      pendente: 'bg-[#EF7D00]/20 text-[#F5A04A]',
+      suspenso: 'bg-[#BC1413]/25 text-red-300',
+    };
+    const ROTULO_PAPEL = { admin: 'Admin', moderador: 'Moderador', usuario: 'Usuário' };
+
+    function filtrar() {
+      const texto = document.getElementById('filtro-texto').value.toLowerCase();
+      const papel = document.getElementById('filtro-papel').value;
+      const status = document.getElementById('filtro-status').value;
+      return USUARIOS
+        .map((u) => ({ ...u, videos: videosDoUsuario(u.id).length }))
+        .filter((u) => (!texto || `${u.nome} ${u.usuario} ${u.email}`.toLowerCase().includes(texto))
+          && (!papel || u.papel === papel) && (!status || u.status === status))
+        .sort((a, b) => {
+          const r = a[ordem.campo] > b[ordem.campo] ? 1 : a[ordem.campo] < b[ordem.campo] ? -1 : 0;
+          return ordem.asc ? r : -r;
+        });
+    }
+
+    function render() {
+      const lista = filtrar();
+      const totalPaginas = Math.max(1, Math.ceil(lista.length / POR_PAGINA));
+      pagina = Math.min(pagina, totalPaginas);
+      const visiveis = lista.slice((pagina - 1) * POR_PAGINA, pagina * POR_PAGINA);
+
+      document.getElementById('linhas').innerHTML = visiveis.map((u) => `
+        <tr class="hover:bg-rural-900/60">
+          <td class="px-4 py-3">
+            <a href="admin-usuario.html?id=${u.id}" class="flex items-center gap-3">
+              ${avatar(u, 'w-9 h-9 text-xs')}
+              <span><span class="block font-medium text-white">${u.nome}</span><span class="block text-xs text-rural-400">@${u.usuario}</span></span>
+            </a>
+          </td>
+          <td class="px-4 py-3 text-rural-300">${u.email}</td>
+          <td class="px-4 py-3 text-rural-300">${ROTULO_PAPEL[u.papel]}</td>
+          <td class="px-4 py-3"><span class="inline-flex px-2 py-0.5 rounded-full text-xs font-medium capitalize ${ESTILO_STATUS[u.status]}">${u.status}</span></td>
+          <td class="px-4 py-3 text-right tabular-nums">${u.videos}</td>
+          <td class="px-4 py-3 text-rural-400">${formatarData(u.criadoEm)}</td>
+          <td class="px-4 py-3 text-right"><a href="admin-usuario.html?id=${u.id}" class="text-brand hover:underline">Detalhes</a></td>
+        </tr>`).join('');
+
+      document.getElementById('vazio').classList.toggle('hidden', lista.length > 0);
+      document.getElementById('info-pagina').textContent = `Página ${pagina} de ${totalPaginas}`;
+      document.getElementById('anterior').disabled = pagina === 1;
+      document.getElementById('proxima').disabled = pagina === totalPaginas;
+
+      const ativos = USUARIOS.filter((u) => u.status === 'ativo').length;
+      document.getElementById('resumo').textContent = `${USUARIOS.length} usuários · ${ativos} ativos · ${lista.length} no filtro`;
+    }
+
+    ['filtro-texto', 'filtro-papel', 'filtro-status'].forEach((id) =>
+      document.getElementById(id).addEventListener('input', () => { pagina = 1; render(); }));
+
+    document.querySelectorAll('[data-ordenar]').forEach((b) => b.addEventListener('click', () => {
+      const campo = b.dataset.ordenar;
+      ordem = { campo, asc: ordem.campo === campo ? !ordem.asc : true };
+      render();
+    }));
+
+    document.getElementById('anterior').addEventListener('click', () => { pagina--; render(); });
+    document.getElementById('proxima').addEventListener('click', () => { pagina++; render(); });
+
+    render();
+  </script>
+</body>
+</html>

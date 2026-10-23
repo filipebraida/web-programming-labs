@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Telas · RuralStream</title>
+  <link href="https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,300;0,400;0,700;0,900;1,400&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="js/tailwind-config.js"></script>
+</head>
+<body class="min-h-screen bg-rural-950 text-rural-100 font-sans antialiased">
+  <main class="max-w-4xl mx-auto px-6 py-16">
+    <p class="text-sm font-semibold text-brand">Programação para Web</p>
+    <h1 class="mt-2 font-display text-5xl font-bold tracking-tight">RuralStream</h1>
+    <p class="mt-4 max-w-xl text-rural-400">Telas base do sistema de vídeos curtos. HTML + Tailwind (CDN), dados em <code class="text-rural-200">js/dados.js</code> e menu em <code class="text-rural-200">js/layout.js</code>.</p>
+
+    <div class="mt-12 grid sm:grid-cols-3 gap-10">
+      <section>
+        <h2 class="text-xs font-semibold uppercase tracking-wider text-rural-500">Conta</h2>
+        <ul class="mt-4 flex flex-col gap-2">
+          <li><a href="login.html" class="hover:text-brand">Login</a></li>
+          <li><a href="cadastro.html" class="hover:text-brand">Criar conta</a></li>
+          <li><a href="perfil.html" class="hover:text-brand">Meu perfil</a></li>
+          <li><a href="perfil.html?id=3" class="hover:text-brand">Perfil de outra pessoa</a></li>
+          <li><a href="editar-perfil.html" class="hover:text-brand">Editar perfil</a></li>
+        </ul>
+      </section>
+      <section>
+        <h2 class="text-xs font-semibold uppercase tracking-wider text-rural-500">Vídeos</h2>
+        <ul class="mt-4 flex flex-col gap-2">
+          <li><a href="index.html" class="hover:text-brand">Início (lista)</a></li>
+          <li><a href="busca.html?q=campus" class="hover:text-brand">Busca</a></li>
+          <li><a href="assistir.html?id=1" class="hover:text-brand">Assistir (feed)</a></li>
+          <li><a href="enviar.html" class="hover:text-brand">Enviar vídeo</a></li>
+        </ul>
+      </section>
+      <section>
+        <h2 class="text-xs font-semibold uppercase tracking-wider text-rural-500">Backoffice</h2>
+        <ul class="mt-4 flex flex-col gap-2">
+          <li><a href="admin-usuarios.html" class="hover:text-brand">Lista de usuários</a></li>
+          <li><a href="admin-usuario.html?id=2" class="hover:text-brand">Detalhe do usuário</a></li>
+          <li><a href="admin-videos.html" class="hover:text-brand">Lista de vídeos</a></li>
+        </ul>
+      </section>
+    </div>
+  </main>
+</body>
+</html>

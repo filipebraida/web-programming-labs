@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Editar perfil · RuralStream</title>
+  <link href="https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,300;0,400;0,700;0,900;1,400&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="js/tailwind-config.js"></script>
+</head>
+<body class="bg-rural-950 text-rural-100 font-sans antialiased" data-pagina="perfil">
+
+  <main class="md:pl-60 pb-24 md:pb-10">
+    <div class="max-w-5xl mx-auto px-4 md:px-8 pt-8">
+      <h1 class="font-display text-3xl font-bold">Editar perfil</h1>
+      <p class="mt-1 text-sm text-rural-400">As informações do perfil público aparecem para todos no RuralStream.</p>
+
+      <form id="form-perfil" class="mt-8 grid md:grid-cols-[280px_minmax(0,1fr)] gap-8" novalidate>
+        <!-- Foto -->
+        <div>
+          <label class="relative flex items-center justify-center aspect-square rounded-2xl border-2 border-dashed border-rural-700 bg-rural-900 cursor-pointer hover:border-brand transition-colors">
+            <input id="input-foto" type="file" accept="image/*" class="sr-only">
+            <div id="foto" class="w-40 h-40 rounded-full overflow-hidden"></div>
+          </label>
+          <div class="mt-3 flex items-center justify-between gap-2 text-sm">
+            <span class="text-rural-400">JPG ou PNG, até 2 MB</span>
+            <div class="flex gap-3">
+              <button type="button" id="trocar-foto" class="text-brand hover:underline">Trocar</button>
+              <button type="button" id="remover-foto" class="text-rural-400 hover:text-white">Remover</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="flex flex-col gap-8">
+
+        <!-- Dados públicos -->
+        <section class="flex flex-col gap-5">
+          <h2 class="text-sm font-semibold uppercase tracking-wider text-rural-400">Perfil público</h2>
+          <label class="flex flex-col gap-1.5">
+            <span class="text-sm font-medium">Nome</span>
+            <input name="nome" required minlength="3" class="h-11 rounded-lg bg-rural-900 border border-rural-800 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent">
+          </label>
+          <label class="flex flex-col gap-1.5">
+            <span class="text-sm font-medium">Nome de usuário</span>
+            <div class="flex h-11 rounded-lg bg-rural-900 border border-rural-800 focus-within:ring-2 focus-within:ring-brand focus-within:border-transparent">
+              <span class="pl-3 grid place-items-center text-sm text-rural-500">rural.stream/@</span>
+              <input name="usuario" required pattern="[a-z0-9._]{3,20}" class="flex-1 min-w-0 bg-transparent px-1 text-sm focus:outline-none">
+            </div>
+          </label>
+          <label class="flex flex-col gap-1.5">
+            <span class="flex justify-between text-sm font-medium">Bio <span class="font-normal text-rural-500"><span id="cont-bio">0</span>/160</span></span>
+            <textarea name="bio" rows="3" maxlength="160" class="rounded-lg bg-rural-900 border border-rural-800 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent resize-none"></textarea>
+          </label>
+        </section>
+
+        <!-- Conta -->
+        <section class="flex flex-col gap-5 pt-8 border-t border-rural-800">
+          <h2 class="text-sm font-semibold uppercase tracking-wider text-rural-400">Conta</h2>
+          <label class="flex flex-col gap-1.5">
+            <span class="text-sm font-medium">E-mail</span>
+            <input name="email" type="email" required class="h-11 rounded-lg bg-rural-900 border border-rural-800 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent">
+          </label>
+          <div class="grid sm:grid-cols-2 gap-4">
+            <label class="flex flex-col gap-1.5">
+              <span class="text-sm font-medium">Nova senha</span>
+              <input name="senha" type="password" minlength="8" placeholder="Deixe em branco para manter" class="h-11 rounded-lg bg-rural-900 border border-rural-800 px-3 text-sm placeholder:text-rural-500 focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent">
+            </label>
+            <label class="flex flex-col gap-1.5">
+              <span class="text-sm font-medium">Confirmar nova senha</span>
+              <input name="confirmar" type="password" class="h-11 rounded-lg bg-rural-900 border border-rural-800 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent">
+            </label>
+          </div>
+        </section>
+
+        <p id="mensagem" class="hidden text-sm"></p>
+
+        <div class="flex gap-3">
+          <a href="perfil.html" class="h-11 px-5 grid place-items-center rounded-lg border border-rural-700 text-sm font-medium hover:bg-rural-900">Cancelar</a>
+          <button class="h-11 px-6 rounded-lg bg-brand text-brand-contraste text-sm font-semibold hover:bg-brand-hover">Salvar alterações</button>
+        </div>
+
+        <!-- Zona de perigo -->
+        <section class="mt-4 p-5 rounded-xl border border-red-900/60">
+          <h2 class="font-semibold text-red-400">Excluir conta</h2>
+          <p class="mt-1 text-sm text-rural-400">Seus vídeos, curtidas e comentários serão removidos permanentemente.</p>
+          <button type="button" id="excluir" class="mt-4 h-9 px-4 rounded-lg border border-red-800 text-sm font-medium text-red-400 hover:bg-red-950">Excluir minha conta</button>
+        </section>
+        </div>
+      </form>
+    </div>
+  </main>
+
+  <script src="js/dados.js"></script>
+  <script src="js/layout.js"></script>
+  <script>
+    const form = document.getElementById('form-perfil');
+    const foto = document.getElementById('foto');
+
+    // Preenche com os dados atuais
+    form.nome.value = SESSAO.nome;
+    form.usuario.value = SESSAO.usuario;
+    form.bio.value = SESSAO.bio;
+    form.email.value = SESSAO.email;
+    document.getElementById('cont-bio').textContent = SESSAO.bio.length;
+    foto.innerHTML = avatar(SESSAO, 'w-40 h-40 text-5xl');
+    document.getElementById('trocar-foto').addEventListener('click', () => document.getElementById('input-foto').click());
+
+    form.bio.addEventListener('input', () => { document.getElementById('cont-bio').textContent = form.bio.value.length; });
+
+    document.getElementById('input-foto').addEventListener('change', (e) => {
+      const f = e.target.files[0];
+      if (f) foto.innerHTML = `<img src="${URL.createObjectURL(f)}" class="w-full h-full object-cover" alt="">`;
+    });
+    document.getElementById('remover-foto').addEventListener('click', () => { foto.innerHTML = avatar(SESSAO, 'w-40 h-40 text-5xl'); });
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const msg = document.getElementById('mensagem');
+      let erro = '';
+      if (!form.nome.checkValidity()) erro = 'Nome deve ter ao menos 3 caracteres.';
+      else if (!form.usuario.checkValidity()) erro = 'Usuário: 3–20 caracteres (a-z, 0-9, . e _).';
+      else if (!form.email.checkValidity()) erro = 'E-mail inválido.';
+      else if (form.senha.value && form.senha.value.length < 8) erro = 'A nova senha deve ter ao menos 8 caracteres.';
+      else if (form.senha.value !== form.confirmar.value) erro = 'As senhas não conferem.';
+
+      msg.classList.remove('hidden');
+      msg.className = `text-sm ${erro ? 'text-red-400' : 'text-brand'}`;
+      msg.textContent = erro || 'Alterações salvas.';
+      // TODO: PUT /api/usuarios/{id}
+    });
+
+    document.getElementById('excluir').addEventListener('click', () => {
+      if (confirm('Tem certeza? Esta ação não pode ser desfeita.')) location.href = 'login.html';
+    });
+  </script>
+</body>
+</html>

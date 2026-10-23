@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Entrar · RuralStream</title>
+  <link href="https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,300;0,400;0,700;0,900;1,400&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="js/tailwind-config.js"></script>
+</head>
+<body class="min-h-screen bg-rural-950 text-rural-100 font-sans antialiased grid place-items-center px-4 py-10">
+
+  <main class="w-full max-w-sm">
+    <a href="index.html" class="flex items-center justify-center gap-2 font-display font-bold text-2xl tracking-tight mb-10">
+      <span class="grid place-items-center w-9 h-9 rounded-lg bg-brand text-brand-contraste">
+        <svg class="w-4 h-4" viewBox="0 0 24 24"><path d="M7 4v16l13-8z" fill="currentColor"/></svg>
+      </span>
+      Rural<span class="text-brand -ml-2">Stream</span>
+    </a>
+
+    <h1 class="font-display text-3xl font-bold text-center">Entrar</h1>
+    <p class="mt-2 text-center text-sm text-rural-400">Use seu e-mail institucional.</p>
+
+    <form id="form-login" class="mt-8 flex flex-col gap-4" novalidate>
+      <label class="flex flex-col gap-1.5">
+        <span class="text-sm font-medium">E-mail</span>
+        <input name="email" type="email" required placeholder="voce@rural.edu.br"
+          class="h-11 rounded-lg bg-rural-900 border border-rural-800 px-3 text-sm placeholder:text-rural-500 focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent">
+      </label>
+      <label class="flex flex-col gap-1.5">
+        <span class="flex justify-between text-sm font-medium">Senha <a href="#" class="font-normal text-rural-400 hover:text-brand">Esqueci a senha</a></span>
+        <input name="senha" type="password" required minlength="6" placeholder="••••••••"
+          class="h-11 rounded-lg bg-rural-900 border border-rural-800 px-3 text-sm placeholder:text-rural-500 focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent">
+      </label>
+      <p id="erro" class="hidden text-sm text-red-400"></p>
+      <button class="h-11 mt-2 rounded-lg bg-brand text-brand-contraste font-semibold hover:bg-brand-hover">Entrar</button>
+    </form>
+
+    <p class="mt-8 text-center text-sm text-rural-400">
+      Não tem conta? <a href="cadastro.html" class="font-medium text-brand hover:underline">Criar conta</a>
+    </p>
+  </main>
+
+  <script>
+    document.getElementById('form-login').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const form = e.target;
+      const erro = document.getElementById('erro');
+      if (!form.checkValidity()) {
+        erro.textContent = 'Preencha e-mail e senha (mínimo 6 caracteres).';
+        erro.classList.remove('hidden');
+        return;
+      }
+      // TODO: POST /api/login
+      location.href = 'index.html';
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Criar conta · RuralStream</title>
+  <link href="https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,300;0,400;0,700;0,900;1,400&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="js/tailwind-config.js"></script>
+</head>
+<body class="min-h-screen bg-rural-950 text-rural-100 font-sans antialiased">
+
+  <div class="min-h-screen grid lg:grid-cols-2">
+    <!-- Lado esquerdo: apresentação -->
+    <section class="hidden lg:flex flex-col justify-between p-12 bg-brand text-brand-contraste">
+      <a href="index.html" class="flex items-center gap-2 font-display font-bold text-2xl tracking-tight">
+        <span class="grid place-items-center w-9 h-9 rounded-lg bg-brand-contraste text-brand">
+          <svg class="w-4 h-4" viewBox="0 0 24 24"><path d="M7 4v16l13-8z" fill="currentColor"/></svg>
+        </span>
+        RuralStream
+      </a>
+      <div>
+        <h2 class="font-display text-5xl font-bold leading-[1.05] tracking-tight">Vídeos curtos<br>de quem vive<br>a Rural.</h2>
+        <p class="mt-6 max-w-md text-lg">Grave, envie e assista vídeos de até 60 segundos sobre o campus, as aulas e tudo que acontece por aqui.</p>
+      </div>
+      <p class="text-sm">Disciplina de Programação para Web</p>
+    </section>
+
+    <!-- Formulário -->
+    <main class="flex items-center justify-center px-4 py-10">
+      <div class="w-full max-w-md">
+        <h1 class="font-display text-3xl font-bold">Criar conta</h1>
+        <p class="mt-2 text-sm text-rural-400">Já tem conta? <a href="login.html" class="font-medium text-brand hover:underline">Entrar</a></p>
+
+        <form id="form-cadastro" class="mt-8 grid grid-cols-2 gap-4" novalidate>
+          <label class="col-span-2 flex flex-col gap-1.5">
+            <span class="text-sm font-medium">Nome completo</span>
+            <input name="nome" required minlength="3" class="h-11 rounded-lg bg-rural-900 border border-rural-800 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent">
+            <small class="hidden text-xs text-red-400" data-erro="nome">Informe seu nome.</small>
+          </label>
+
+          <label class="col-span-2 sm:col-span-1 flex flex-col gap-1.5">
+            <span class="text-sm font-medium">Nome de usuário</span>
+            <div class="flex h-11 rounded-lg bg-rural-900 border border-rural-800 focus-within:ring-2 focus-within:ring-brand focus-within:border-transparent">
+              <span class="pl-3 grid place-items-center text-sm text-rural-500">@</span>
+              <input name="usuario" required pattern="[a-z0-9._]{3,20}" class="flex-1 min-w-0 bg-transparent px-1 text-sm focus:outline-none">
+            </div>
+            <small class="hidden text-xs text-red-400" data-erro="usuario">3–20 caracteres: letras minúsculas, números, . ou _</small>
+          </label>
+
+          <label class="col-span-2 sm:col-span-1 flex flex-col gap-1.5">
+            <span class="text-sm font-medium">Data de nascimento</span>
+            <input name="nascimento" type="date" required class="h-11 rounded-lg bg-rural-900 border border-rural-800 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent">
+            <small class="hidden text-xs text-red-400" data-erro="nascimento">Informe a data.</small>
+          </label>
+
+          <label class="col-span-2 flex flex-col gap-1.5">
+            <span class="text-sm font-medium">E-mail</span>
+            <input name="email" type="email" required placeholder="voce@rural.edu.br" class="h-11 rounded-lg bg-rural-900 border border-rural-800 px-3 text-sm placeholder:text-rural-500 focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent">
+            <small class="hidden text-xs text-red-400" data-erro="email">E-mail inválido.</small>
+          </label>
+
+          <label class="col-span-2 sm:col-span-1 flex flex-col gap-1.5">
+            <span class="text-sm font-medium">Senha</span>
+            <input name="senha" type="password" required minlength="8" class="h-11 rounded-lg bg-rural-900 border border-rural-800 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent">
+            <small class="hidden text-xs text-red-400" data-erro="senha">Mínimo de 8 caracteres.</small>
+          </label>
+
+          <label class="col-span-2 sm:col-span-1 flex flex-col gap-1.5">
+            <span class="text-sm font-medium">Confirmar senha</span>
+            <input name="confirmar" type="password" required class="h-11 rounded-lg bg-rural-900 border border-rural-800 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent">
+            <small class="hidden text-xs text-red-400" data-erro="confirmar">As senhas não conferem.</small>
+          </label>
+
+          <label class="col-span-2 flex items-start gap-3 text-sm text-rural-300">
+            <input name="termos" type="checkbox" required class="mt-0.5 w-4 h-4 accent-brand">
+            <span>Li e aceito os <a href="#" class="text-brand hover:underline">termos de uso</a> e a <a href="#" class="text-brand hover:underline">política de privacidade</a>.</span>
+          </label>
+          <small class="col-span-2 -mt-2 hidden text-xs text-red-400" data-erro="termos">Aceite os termos para continuar.</small>
+
+          <button class="col-span-2 h-11 mt-2 rounded-lg bg-brand text-brand-contraste font-semibold hover:bg-brand-hover">Criar conta</button>
+        </form>
+
+        <div id="sucesso" class="hidden mt-8 rounded-xl border border-brand/40 bg-brand/10 p-5">
+          <p class="font-semibold text-brand">Conta criada!</p>
+          <p class="mt-1 text-sm text-rural-300">Enviamos um link de confirmação para o seu e-mail. <a href="login.html" class="underline">Ir para o login</a></p>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    const form = document.getElementById('form-cadastro');
+
+    function mostrarErro(campo, invalido) {
+      form.querySelector(`[data-erro="${campo}"]`).classList.toggle('hidden', !invalido);
+    }
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      let ok = true;
+      for (const campo of ['nome', 'usuario', 'nascimento', 'email', 'senha', 'termos']) {
+        const invalido = !form.elements[campo].checkValidity();
+        mostrarErro(campo, invalido);
+        if (invalido) ok = false;
+      }
+      const senhasDiferentes = form.senha.value !== form.confirmar.value || !form.confirmar.value;
+      mostrarErro('confirmar', senhasDiferentes);
+      if (senhasDiferentes) ok = false;
+      if (!ok) return;
+
+      // TODO: POST /api/usuarios com os dados do formulário
+      const dados = Object.fromEntries(new FormData(form));
+      console.log('Novo usuário', dados);
+      form.classList.add('hidden');
+      document.getElementById('sucesso').classList.remove('hidden');
+    });
+  </script>
+</body>
+</html>

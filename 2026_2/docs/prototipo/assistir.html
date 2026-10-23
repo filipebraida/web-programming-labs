@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Assistir · RuralStream</title>
+  <link href="https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,300;0,400;0,700;0,900;1,400&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="js/tailwind-config.js"></script>
+</head>
+<body class="bg-black text-rural-100 font-sans antialiased overflow-hidden" data-pagina="inicio">
+
+  <main class="md:pl-60">
+    <!-- Feed vertical com rolagem "encaixada" (scroll-snap). Cada <section> é um vídeo. -->
+    <div id="feed" class="h-[calc(100dvh-4rem)] md:h-dvh overflow-y-scroll snap-y snap-mandatory [scrollbar-width:none]"></div>
+
+    <a href="index.html" class="fixed top-4 left-4 md:left-64 z-20 grid place-items-center w-10 h-10 rounded-full bg-black/50 text-[#fff] hover:bg-black/70" aria-label="Voltar">
+      <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg>
+    </a>
+  </main>
+
+  <!-- Gaveta de comentários -->
+  <div id="comentarios" class="fixed inset-0 z-40 hidden">
+    <div data-fechar class="absolute inset-0 bg-black/60"></div>
+    <aside class="absolute bottom-0 inset-x-0 md:inset-y-0 md:left-auto md:w-96 max-h-[70dvh] md:max-h-none flex flex-col rounded-t-2xl md:rounded-none bg-rural-900 border-l border-rural-800">
+      <header class="flex items-center justify-between px-5 h-14 border-b border-rural-800">
+        <h2 class="font-semibold"><span id="total-comentarios"></span> comentários</h2>
+        <button data-fechar class="w-8 h-8 rounded-full hover:bg-rural-800 text-xl leading-none" aria-label="Fechar">×</button>
+      </header>
+      <ul id="lista-comentarios" class="flex-1 overflow-y-auto px-5 py-4 flex flex-col gap-5"></ul>
+      <form id="form-comentario" class="flex gap-2 p-4 border-t border-rural-800">
+        <input name="texto" required placeholder="Adicionar comentário..." class="flex-1 h-10 px-4 rounded-full bg-rural-800 text-sm placeholder:text-rural-500 focus:outline-none focus:ring-2 focus:ring-brand">
+        <button class="h-10 px-4 rounded-full bg-brand text-brand-contraste text-sm font-semibold">Enviar</button>
+      </form>
+    </aside>
+  </div>
+
+  <script src="js/dados.js"></script>
+  <script src="js/layout.js"></script>
+  <script>
+    const feed = document.getElementById('feed');
+    const LOTE = 5;              // quantos vídeos adicionar por vez
+    let mudo = true;             // navegadores só permitem autoplay sem som
+    const curtidos = new Set(JSON.parse(localStorage.getItem('rs_curtidos') || '[]'));
+
+    // Ordem do feed: começa no vídeo da URL e segue com os demais
+    const inicio = Math.max(0, VIDEOS.findIndex((v) => v.id === Number(parametro('id'))));
+    const fila = [...VIDEOS.slice(inicio), ...VIDEOS.slice(0, inicio)];
+    let renderizados = 0;
+
+    function botaoAcao(acao, iconeNome, rotulo, ativo = false) {
+      return `<button data-acao="${acao}" class="flex flex-col items-center gap-1 text-xs font-medium text-[#fff]">
+        <span class="grid place-items-center w-12 h-12 rounded-full ${ativo ? 'bg-brand text-brand-contraste' : 'bg-[#fff]/15 hover:bg-[#fff]/25'}">${icone(iconeNome, 'w-6 h-6')}</span>
+        <span data-rotulo>${rotulo}</span>
+      </button>`;
+    }
+
+    function itemFeed(v) {
+      const autor = buscarUsuario(v.autorId);
+      const curtido = curtidos.has(v.id);
+      return `<section data-id="${v.id}" class="snap-start h-full flex items-center justify-center gap-4 md:py-4">
+        <div class="relative h-full aspect-[9/16] max-w-full md:rounded-2xl overflow-hidden" style="background:${corPorId(v.id)}">
+          <video class="absolute inset-0 w-full h-full object-cover" loop playsinline muted preload="none" data-src="${v.src}"></video>
+          <div data-pausado class="hidden absolute inset-0 grid place-items-center text-[#fff]/80 pointer-events-none">${icone('play', 'w-16 h-16')}</div>
+
+          <button data-acao="som" class="absolute top-4 right-4 grid place-items-center w-10 h-10 rounded-full bg-black/50 text-[#fff]">${icone('mudo')}</button>
+
+          <!-- Informações do vídeo -->
+          <div class="absolute inset-x-0 bottom-0 p-4 pr-20 md:pr-4 pt-16 bg-gradient-to-t from-black/85 via-black/40 to-transparent pointer-events-none">
+            <a href="perfil.html?id=${autor.id}" class="pointer-events-auto inline-flex items-center gap-2">
+              ${avatar(autor, 'w-9 h-9 text-xs')}
+              <span class="font-semibold">@${autor.usuario}</span>
+            </a>
+            <h2 class="mt-2 font-medium leading-snug">${v.titulo}</h2>
+            <p class="mt-1 text-sm text-[#fff]/80 line-clamp-2">${v.descricao}</p>
+            <p class="mt-2 text-xs text-[#fff]/70">${formatarNumero(v.visualizacoes)} visualizações · ${tempoRelativo(v.criadoEm)}</p>
+          </div>
+
+          <!-- Barra de progresso -->
+          <div class="absolute bottom-0 inset-x-0 h-1 bg-[#fff]/20"><div data-progresso class="h-full w-0 bg-brand"></div></div>
+
+          <!-- Ações (mobile: sobre o vídeo) -->
+          <div class="md:hidden absolute right-3 bottom-24 flex flex-col gap-4" data-acoes>
+            ${botaoAcao('curtir', 'coracao', formatarNumero(v.curtidas + (curtido ? 1 : 0)), curtido)}
+            ${botaoAcao('comentar', 'comentario', formatarNumero(v.comentarios))}
+            ${botaoAcao('compartilhar', 'compartilhar', 'Copiar')}
+          </div>
+        </div>
+
+        <!-- Ações (desktop: ao lado do vídeo) -->
+        <div class="hidden md:flex flex-col gap-5 self-end pb-6" data-acoes>
+          ${botaoAcao('curtir', 'coracao', formatarNumero(v.curtidas + (curtido ? 1 : 0)), curtido)}
+          ${botaoAcao('comentar', 'comentario', formatarNumero(v.comentarios))}
+          ${botaoAcao('compartilhar', 'compartilhar', 'Copiar')}
+        </div>
+      </section>`;
+    }
+
+    // Toca o vídeo visível e pausa os outros
+    const observador = new IntersectionObserver((entradas) => {
+      entradas.forEach((entrada) => {
+        const secao = entrada.target;
+        const video = secao.querySelector('video');
+        if (entrada.isIntersecting) {
+          if (!video.src) video.src = video.dataset.src;
+          video.muted = mudo;
+          video.currentTime = 0;
+          video.play().catch(() => {});
+          history.replaceState(null, '', `?id=${secao.dataset.id}`);
+          // Chegou perto do fim? adiciona mais vídeos
+          if (Number(secao.dataset.ordem) >= renderizados - 2) adicionarLote();
+        } else {
+          video.pause();
+        }
+      });
+    }, { threshold: 0.6 });
+
+    function adicionarLote() {
+      const proximos = fila.slice(renderizados, renderizados + LOTE);
+      proximos.forEach((v, i) => {
+        feed.insertAdjacentHTML('beforeend', itemFeed(v));
+        const secao = feed.lastElementChild;
+        secao.dataset.ordem = renderizados + i;
+        const video = secao.querySelector('video');
+        video.addEventListener('timeupdate', () => {
+          secao.querySelector('[data-progresso]').style.width = `${(video.currentTime / video.duration) * 100}%`;
+        });
+        observador.observe(secao);
+      });
+      renderizados += proximos.length;
+    }
+
+    // Um único listener para todos os cliques do feed (delegação de eventos)
+    feed.addEventListener('click', (e) => {
+      const secao = e.target.closest('section');
+      if (!secao) return;
+      const id = Number(secao.dataset.id);
+      const video = secao.querySelector('video');
+      const acao = e.target.closest('[data-acao]')?.dataset.acao;
+
+      if (acao === 'curtir') {
+        curtidos.has(id) ? curtidos.delete(id) : curtidos.add(id);
+        localStorage.setItem('rs_curtidos', JSON.stringify([...curtidos]));
+        const total = buscarVideo(id).curtidas + (curtidos.has(id) ? 1 : 0);
+        secao.querySelectorAll('[data-acao="curtir"]').forEach((b) => {
+          b.querySelector('span').className = `grid place-items-center w-12 h-12 rounded-full ${curtidos.has(id) ? 'bg-brand text-brand-contraste' : 'bg-[#fff]/15 hover:bg-[#fff]/25'}`;
+          b.querySelector('[data-rotulo]').textContent = formatarNumero(total);
+        });
+      } else if (acao === 'comentar') {
+        abrirComentarios(buscarVideo(id));
+      } else if (acao === 'compartilhar') {
+        navigator.clipboard?.writeText(`${location.origin}${location.pathname}?id=${id}`);
+        secao.querySelectorAll('[data-acao="compartilhar"] [data-rotulo]').forEach((r) => (r.textContent = 'Copiado!'));
+      } else if (acao === 'som') {
+        mudo = !mudo;
+        feed.querySelectorAll('video').forEach((v) => (v.muted = mudo));
+        feed.querySelectorAll('[data-acao="som"]').forEach((b) => (b.innerHTML = icone(mudo ? 'mudo' : 'som')));
+      } else if (!e.target.closest('a, [data-acoes]')) {
+        video.paused ? video.play() : video.pause();
+        secao.querySelector('[data-pausado]').classList.toggle('hidden', !video.paused);
+      }
+    });
+
+    // ---------- Comentários (mock) ----------
+    const gaveta = document.getElementById('comentarios');
+    const FRASES = ['Muito bom!', 'Saudade do campus', 'Isso caiu na prova kkk', 'Onde fica isso?', 'Faz parte 2 por favor', 'Melhor vídeo da semana'];
+    let videoComentado;
+
+    function abrirComentarios(v) {
+      videoComentado = v;
+      v.listaComentarios ??= Array.from({ length: 6 }, (_, i) => ({
+        autor: USUARIOS[(v.id + i) % USUARIOS.length], texto: FRASES[(v.id + i) % FRASES.length], quando: `${i + 1} h`,
+      }));
+      renderComentarios();
+      gaveta.classList.remove('hidden');
+    }
+
+    function renderComentarios() {
+      document.getElementById('total-comentarios').textContent = videoComentado.listaComentarios.length;
+      document.getElementById('lista-comentarios').innerHTML = videoComentado.listaComentarios.map((c) => `
+        <li class="flex gap-3">
+          ${avatar(c.autor, 'w-8 h-8 text-[11px]')}
+          <div>
+            <p class="text-xs text-rural-400"><span class="font-semibold text-rural-200">@${c.autor.usuario}</span> · ${c.quando}</p>
+            <p class="mt-0.5 text-sm">${c.texto}</p>
+          </div>
+        </li>`).join('');
+    }
+
+    gaveta.addEventListener('click', (e) => { if (e.target.closest('[data-fechar]')) gaveta.classList.add('hidden'); });
+    document.getElementById('form-comentario').addEventListener('submit', (e) => {
+      e.preventDefault();
+      videoComentado.listaComentarios.unshift({ autor: SESSAO, texto: e.target.texto.value, quando: 'agora' });
+      e.target.reset();
+      renderComentarios();
+    });
+
+    // Teclado: setas para navegar
+    document.addEventListener('keydown', (e) => {
+      if (e.target.tagName === 'INPUT') return;
+      if (e.key === 'ArrowDown') feed.scrollBy({ top: feed.clientHeight, behavior: 'smooth' });
+      if (e.key === 'ArrowUp') feed.scrollBy({ top: -feed.clientHeight, behavior: 'smooth' });
+    });
+
+    adicionarLote();
+  </script>
+</body>
+</html>
